@@ -14,6 +14,8 @@ Then write the two files that a coding agent reads:
 hod init
 ```
 
+Run `hod update` to install the newest build. The command writes over the binary that this package holds, so you do not install the package again.
+
 Hodstack is before its first tag. Every push to `0.x` builds the binary again, and this package gives you that build. Run `hod --version` to see the commit you have.
 
 This package carries three names: `hodstack`, `@hodstack/cli` and `@hodstack/hod`. They hold the same files. Install any one of them.

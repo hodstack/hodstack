@@ -1,6 +1,7 @@
 mod cli;
 mod help;
 mod init;
+mod update;
 
 use std::env;
 use std::io::{self, Write as _};
@@ -53,16 +54,28 @@ pub fn run() -> Result<ExitCode> {
     };
 
     let mut out = anstream::stdout().lock();
+    let asks = !matches!(
+        command,
+        Command::Update { .. } | Command::Completions { .. }
+    );
 
-    match command {
+    let code = match command {
         Command::Init => {
             let dir = env::current_dir().context("cannot read the current directory")?;
             init(&dir, &mut out)
         }
         Command::Run { skill, prompt } => Ok(run_skill(&skill, &prompt)),
         Command::List => Ok(list()),
+        Command::Update { check } => update::update(check, &mut out),
         Command::Completions { shell } => Ok(completions(shell)),
+    }?;
+
+    if asks {
+        out.flush()?;
+        update::notice(&mut anstream::stderr().lock());
     }
+
+    Ok(code)
 }
 
 #[must_use]

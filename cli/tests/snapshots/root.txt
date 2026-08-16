@@ -8,6 +8,7 @@ COMMANDS
   init         Create AGENTS.md and CLAUDE.md in this directory
   run          Run a skill with a prompt
   list         List the installed skills
+  update       Install the newest build of hod
   completions  Print a shell completion script
 
 OPTIONS

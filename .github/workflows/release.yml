@@ -99,12 +99,15 @@ jobs:
 
       - name: Read the version
         id: version
+        env:
+          SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
         run: |
           set -eu
           crate="$(sed -n 's/^version = "\(.*\)"$/\1/p' cli/Cargo.toml | head -n 1)"
           stamp="$(date -u +%Y%m%d-%H%M%S)"
           echo "tag=edge-$stamp" >> "$GITHUB_OUTPUT"
           echo "version=$crate-edge.$stamp" >> "$GITHUB_OUTPUT"
+          printf '%s %s\n' "$crate" "$SHA" > dist/version.txt
 
       - name: Write the checksums
         working-directory: dist

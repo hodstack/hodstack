@@ -35,6 +35,12 @@ pub enum Command {
     #[command(about = "List the installed skills")]
     List,
 
+    #[command(about = "Install the newest build of hod")]
+    Update {
+        #[arg(long, help = "Report the newest build without an installation of it")]
+        check: bool,
+    },
+
     #[command(about = "Print a shell completion script")]
     Completions {
         #[arg(help = "The shell that receives the script")]

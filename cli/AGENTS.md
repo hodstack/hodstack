@@ -18,7 +18,7 @@ Write the program in Rust. Compile one binary with the name `hod`. Give the bina
 
 ## 2. The commands
 
-The program gives four commands. `init` writes `AGENTS.md` and `CLAUDE.md` into the current directory. `run` starts a skill with a prompt. `list` names each installed skill. `completions` writes a completion script for a shell.
+The program gives five commands. `init` writes `AGENTS.md` and `CLAUDE.md` into the current directory. `run` starts a skill with a prompt. `list` names each installed skill. `update` installs the newest build over this one, and `update --check` names that build without an installation. `completions` writes a completion script for a shell.
 
 The constants in `src/init.rs` read `templates/` with `include_str!`, thus the binary carries no dependence on a file on the computer of the user. Write no path that leaves `cli/` in an `include_str!`: `cargo package` writes a crate that does not build. The key `include` in `Cargo.toml` names `templates/*.md`, thus the package carries the two files. Write a new file that the binary reads into that key too.
 
@@ -26,7 +26,7 @@ The function `init` tests each path before it writes one file, thus the command 
 
 The function `report` in `src/lib.rs` gives the exit code 0 for a broken pipe. The command `hod | head` closes the output before the program writes each line, thus the program stops without a message and reports success.
 
-Only `init` has a body today. Write `unimplemented!()` in a command without a body, and write `#[expect(clippy::unimplemented, reason = "...")]` above that command. The lint `clippy::unimplemented` carries the level `deny` in `Cargo.toml`, thus the compiler reports the expectation as unfulfilled on the day that the command receives a body. Delete the attribute in the same change.
+`init` and `update` have a body today. Write `unimplemented!()` in a command without a body, and write `#[expect(clippy::unimplemented, reason = "...")]` above that command. The lint `clippy::unimplemented` carries the level `deny` in `Cargo.toml`, thus the compiler reports the expectation as unfulfilled on the day that the command receives a body. Delete the attribute in the same change.
 
 ---
 
@@ -106,7 +106,7 @@ The job `build` gives five targets: `aarch64-apple-darwin`, `x86_64-apple-darwin
 
 Each archive carries the binary and `LICENSE.md` in the format `tar.gz`, for each target. Windows 10 and later carry `tar.exe`, thus one format serves each installer.
 
-The job `publish` writes `checksums.txt` from each archive. Each installer reads that file and stops when the sum does not agree. Keep that test in a new installer.
+The job `publish` writes `checksums.txt` from each archive. Each installer reads that file and stops when the sum does not agree. Keep that test in a new installer. The job writes `version.txt` too, with the version of the crate and the full commit in one line, and `hod update` reads that file to find the newest build.
 
 The function `version` in `src/lib.rs` reads the variable `HOD_COMMIT` with `option_env!`. The job `build` gives that variable the commit, thus `hod --version` names the build. The variable is absent in a local build, thus the snapshot in `tests/snapshots/root.txt` holds the version alone.
 

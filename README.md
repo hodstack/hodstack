@@ -28,6 +28,16 @@ Then write the two files that a coding agent reads:
 hod init
 ```
 
+## Updates
+
+`hod` tells you when a newer build exists. One command installs it, whichever way you installed `hod`:
+
+```sh
+hod update
+```
+
+Set `HOD_NO_UPDATE_CHECK=1` to keep the notice quiet.
+
 ## Sponsors
 
 We cannot thank our sponsors enough for their incredible support in funding Hodstack's development. Their contributions have been instrumental in making Hodstack the best it can be. For those who are interested in becoming a sponsor, please visit Nuno Maduro's Sponsor page at **[github.com/sponsors/nunomaduro](https://github.com/sponsors/nunomaduro)**.

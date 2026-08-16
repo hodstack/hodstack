@@ -35,7 +35,13 @@ Write the intention of the project in this file. Write a decision about one dire
 
 A change to this file can make a rule below it wrong. After you change this file, read the `AGENTS.md` file of each directory and correct each rule that your change makes wrong. Do this in the same commit.
 
-Each task teaches you a fact that these files do not hold. Write the fact in the same change, or the session ends and you lose it. A correction from the user is a rule: write it in a file before you continue the work. Replace an old rule. Do not add a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
+Write no new rule. This is the correct result of each task, and a task that adds a command, a module or a workflow does not change it. A rule needs a fault that happened: name the decision that you made wrong, or name the decision that these files refused to give you. A wrong change that you imagine is not a fault, thus write no rule to protect the code that you write today.
+
+Write no rule for a fact that a name, a type, a test, a manifest or `git log` holds. Put the fact in the code first: a test stops the agent that breaks it, and a rule does not.
+
+Ask the user before you write a rule. Give the fault, then write the rule in one sentence after the user agrees. Keep the length of the file: delete a rule in the same change, or ask the user to accept a longer file. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
+
+Give no new part of the program its own section, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not add a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
 
 ---
 
