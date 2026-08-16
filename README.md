@@ -16,12 +16,6 @@ On Windows:
 irm https://github.com/hodstack/hodstack/releases/download/edge/install.ps1 | iex
 ```
 
-With Homebrew:
-
-```sh
-brew install hodstack/tap/hod
-```
-
 With npm:
 
 ```sh

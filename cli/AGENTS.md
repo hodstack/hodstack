@@ -106,15 +106,13 @@ The job `publish` writes `checksums.txt` from each archive. Each installer reads
 
 The function `version` in `src/lib.rs` reads the variable `HOD_COMMIT` with `option_env!`. The job `build` gives that variable the commit, thus `hod --version` names the build. The variable is absent in a local build, thus the snapshot in `tests/snapshots/root.txt` holds the version alone.
 
-The job `homebrew` writes `Formula/hod.rb` in the repository `hodstack/homebrew-tap`. The formula carries the version `<crate version>-edge.<run number>`, because Homebrew names the file in its cache with the version. A version that does not change gives a checksum fault to a user who installed a build before.
-
 The job `npm` publishes the directory `npm/` with the same version and the tag `edge`. The package downloads the binary from the release with the tag `edge`, thus the version of the package names the build that published it and not the build that the user receives.
 
 The job publishes the same files three times, with the names `hodstack`, `@hodstack/cli` and `@hodstack/hod`. `npm pkg set name=...` writes each name before each publication. The name `hod` on npm belongs to a different supplier. The two names with the prefix `@hodstack/` need the organization `hodstack` on npm.
 
 No dist-tag `latest` exists today, thus `npm install hodstack` reports a fault and `npm install hodstack@edge` works. Publish a version to the tag `latest` when `hod run` has a body, and correct `README.md` and `npm/README.md` in the same change.
 
-The job `homebrew` needs the secret `TAP_TOKEN` and the job `npm` needs the secret `NPM_TOKEN`. A job reads its secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. A job without its secret does no step and reports success.
+The job `npm` needs the secret `NPM_TOKEN`. The job reads that secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. The job without its secret does no step and reports success.
 
 The three installers sit at the top of the repository: `install.sh`, `install.ps1` and `npm/`. They install the binary of this directory, thus this section controls them. Write no comment in them. Refer to the `AGENTS.md` file at the top level, section 4.
 
