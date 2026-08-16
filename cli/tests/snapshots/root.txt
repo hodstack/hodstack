@@ -1,5 +1,5 @@
 
-hod 0.1.0 — Hodstack makes coding agents more productive.
+hod 0.0.1 — Hodstack makes coding agents more productive.
 
 USAGE
   hod <command> [options]
