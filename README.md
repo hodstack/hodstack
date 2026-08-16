@@ -7,13 +7,13 @@ Hodstack makes coding agents more productive.
 On macOS and Linux:
 
 ```sh
-curl -fsSL https://github.com/hodstack/hodstack/releases/download/edge/install.sh | sh
+curl -fsSL https://github.com/hodstack/hodstack/releases/latest/download/install.sh | sh
 ```
 
 On Windows:
 
 ```powershell
-irm https://github.com/hodstack/hodstack/releases/download/edge/install.ps1 | iex
+irm https://github.com/hodstack/hodstack/releases/latest/download/install.ps1 | iex
 ```
 
 With npm:

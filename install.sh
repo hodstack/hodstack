@@ -2,9 +2,16 @@
 set -eu
 
 REPO="hodstack/hodstack"
-TAG="${HOD_TAG:-edge}"
+TAG="${HOD_TAG:-}"
 DIR="${HOD_INSTALL_DIR:-$HOME/.local/bin}"
-URL="${HOD_RELEASE_URL:-https://github.com/$REPO/releases/download/$TAG}"
+
+if [ -n "$TAG" ]; then
+    RELEASE="https://github.com/$REPO/releases/download/$TAG"
+else
+    RELEASE="https://github.com/$REPO/releases/latest/download"
+fi
+
+URL="${HOD_RELEASE_URL:-$RELEASE}"
 
 fail() {
     printf 'error: %s\n' "$1" >&2

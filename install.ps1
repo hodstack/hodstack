@@ -2,9 +2,12 @@
 $ErrorActionPreference = 'Stop'
 
 $repo = 'hodstack/hodstack'
-$tag = if ($env:HOD_TAG) { $env:HOD_TAG } else { 'edge' }
 $dir = if ($env:HOD_INSTALL_DIR) { $env:HOD_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA 'hod\bin' }
-$url = "https://github.com/$repo/releases/download/$tag"
+$url = if ($env:HOD_TAG) {
+    "https://github.com/$repo/releases/download/$env:HOD_TAG"
+} else {
+    "https://github.com/$repo/releases/latest/download"
+}
 
 function Get-Target {
     switch ($env:PROCESSOR_ARCHITECTURE) {

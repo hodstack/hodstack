@@ -96,7 +96,11 @@ The organization `hodstack` refuses an action that a tag or a branch names. Writ
 
 The branch `0.x` is the release. The project writes no tag for a version today. The workflow `.github/workflows/release.yml` starts when the workflow `CI` reports success on that branch, thus a push gives new artifacts and a build that fails a check reaches no user.
 
-The workflow moves the tag `edge` to the commit and writes each artifact to the release with that tag. The address of each artifact thus stays the same: `https://github.com/hodstack/hodstack/releases/download/edge/hod-<target>.tar.gz`. Do not write the version into a file name, and do not create a second release: `install.sh`, `install.ps1` and `npm/install.js` hold that address.
+The workflow writes one release for each push. The tag is `edge-<date>-<time>` in UTC, and the release carries the mark `latest`. The address of each artifact thus stays the same: `https://github.com/hodstack/hodstack/releases/latest/download/hod-<target>.tar.gz`. `install.sh`, `install.ps1` and `npm/install.js` hold that address. Do not write the version into a file name.
+
+The repository holds the setting for an immutable release. A published release thus accepts no new file and no change, and one tag serves one release. Give each release a new tag, and do not use the tag of a release that exists: GitHub keeps the name of that tag for ever, and the name `edge` is spent. Do not give a release the mark `prerelease`: the address `releases/latest/` passes a release with that mark.
+
+The step `Delete each release after the tenth` keeps ten releases. GitHub accepts the deletion of an immutable release, and it keeps the name of the tag.
 
 The job `build` gives five targets: `aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl` and `x86_64-pc-windows-msvc`. Linux uses musl, because musl gives a static binary and the binary thus has no dependence on the glibc version of the computer of the user.
 
@@ -106,7 +110,7 @@ The job `publish` writes `checksums.txt` from each archive. Each installer reads
 
 The function `version` in `src/lib.rs` reads the variable `HOD_COMMIT` with `option_env!`. The job `build` gives that variable the commit, thus `hod --version` names the build. The variable is absent in a local build, thus the snapshot in `tests/snapshots/root.txt` holds the version alone.
 
-The job `npm` publishes the directory `npm/` with the same version and the tag `edge`. The package downloads the binary from the release with the tag `edge`, thus the version of the package names the build that published it and not the build that the user receives.
+The job `npm` publishes the directory `npm/` with the same version and the dist-tag `edge`. The package downloads the binary from the newest release, thus the version of the package names the build that published it and not the build that the user receives.
 
 The job publishes the same files three times, with the names `hodstack`, `@hodstack/cli` and `@hodstack/hod`. `npm pkg set name=...` writes each name before each publication. The name `hod` on npm belongs to a different supplier. The two names with the prefix `@hodstack/` need the organization `hodstack` on npm.
 
@@ -116,7 +120,7 @@ The job `npm` needs the secret `NPM_TOKEN`. The job reads that secret through a 
 
 The three installers sit at the top of the repository: `install.sh`, `install.ps1` and `npm/`. They install the binary of this directory, thus this section controls them. Write no comment in them. Refer to the `AGENTS.md` file at the top level, section 4.
 
-The job `publish` writes `install.sh` and `install.ps1` to the release with the tag `edge`. `README.md` gives the address of that file to the user, thus the project needs no website to install the binary.
+The job `publish` writes `install.sh` and `install.ps1` to each release. `README.md` gives the address `releases/latest/download/install.sh` to the user, thus the project needs no website to install the binary.
 
 `install.sh` reads the variable `HOD_RELEASE_URL`. Give that variable a `file://` address to test the installer without a release.
 

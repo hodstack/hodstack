@@ -5,8 +5,10 @@ const { tmpdir } = require('node:os')
 const { join } = require('node:path')
 
 const REPOSITORY = 'hodstack/hodstack'
-const TAG = process.env.HOD_TAG || 'edge'
-const RELEASE = `https://github.com/${REPOSITORY}/releases/download/${TAG}`
+const TAG = process.env.HOD_TAG
+const RELEASE = TAG
+  ? `https://github.com/${REPOSITORY}/releases/download/${TAG}`
+  : `https://github.com/${REPOSITORY}/releases/latest/download`
 
 const TARGETS = {
   'darwin arm64': 'aarch64-apple-darwin',

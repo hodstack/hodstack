@@ -16,7 +16,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  TAG: edge
 
 jobs:
   build:
@@ -109,34 +108,33 @@ jobs:
         working-directory: dist
         run: sha256sum hod-*.tar.gz > checksums.txt
 
-      - name: Move the tag
-        env:
-          SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
-        run: |
-          set -eu
-          git tag --force "$TAG" "$SHA"
-          git push --force origin "refs/tags/$TAG"
-
       - name: Write the release
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
         run: |
           set -eu
+          tag="edge-$(date -u +%Y%m%d-%H%M%S)"
           notes="$(printf '%s\n' \
             "The build of \`0.x\`, at commit \`${SHA}\`." \
             "" \
             "\`\`\`" \
-            "curl -fsSL https://github.com/hodstack/hodstack/releases/download/edge/install.sh | sh" \
+            "curl -fsSL https://github.com/hodstack/hodstack/releases/latest/download/install.sh | sh" \
             "\`\`\`" \
             "" \
-            "The address of each file below stays the same. Every push to \`0.x\` writes this release again.")"
-          if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release edit "$TAG" --notes "$notes" --prerelease
-          else
-            gh release create "$TAG" --title "Edge" --notes "$notes" --prerelease --target "$SHA"
-          fi
-          gh release upload "$TAG" dist/* install.sh install.ps1 --clobber
+            "That address gives the newest build. Every push to \`0.x\` writes a release and moves it.")"
+          gh release create "$tag" --title "$tag" --notes "$notes" --latest --target "$SHA" \
+            dist/* install.sh install.ps1
+
+      - name: Delete each release after the tenth
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          gh release list --limit 100 --json tagName,createdAt \
+            | jq -r 'sort_by(.createdAt) | reverse | .[].tagName | select(startswith("edge-"))' \
+            | tail -n +11 \
+            | while read -r old; do gh release delete "$old" --yes --cleanup-tag; done
 
   npm:
     name: npm
