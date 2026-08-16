@@ -102,7 +102,9 @@ jobs:
         run: |
           set -eu
           crate="$(sed -n 's/^version = "\(.*\)"$/\1/p' cli/Cargo.toml | head -n 1)"
-          echo "version=$crate-edge.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          stamp="$(date -u +%Y%m%d-%H%M%S)"
+          echo "tag=edge-$stamp" >> "$GITHUB_OUTPUT"
+          echo "version=$crate-edge.$stamp" >> "$GITHUB_OUTPUT"
 
       - name: Write the checksums
         working-directory: dist
@@ -112,9 +114,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           set -eu
-          tag="edge-$(date -u +%Y%m%d-%H%M%S)"
           notes="$(printf '%s\n' \
             "The build of \`0.x\`, at commit \`${SHA}\`." \
             "" \
@@ -123,7 +125,7 @@ jobs:
             "\`\`\`" \
             "" \
             "That address gives the newest build. Every push to \`0.x\` writes a release and moves it.")"
-          gh release create "$tag" --title "$tag" --notes "$notes" --latest --target "$SHA" \
+          gh release create "$TAG" --title "$TAG" --notes "$notes" --latest --target "$SHA" \
             dist/* install.sh install.ps1
 
       - name: Delete each release after the tenth
