@@ -243,4 +243,8 @@ jobs:
         run: |
           set -eu
           npm version "$VERSION" --no-git-tag-version
-          npm publish --tag edge --access public
+          for name in hodstack @hodstack/cli @hodstack/hod; do
+            npm pkg set name="$name"
+            npm publish --tag edge --access public
+          done
+          npm pkg set name=hodstack
