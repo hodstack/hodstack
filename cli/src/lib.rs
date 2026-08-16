@@ -5,6 +5,7 @@ mod init;
 use std::env;
 use std::io::{self, Write as _};
 use std::process::ExitCode;
+use std::sync::OnceLock;
 
 use anstyle::{AnsiColor, Color, Style};
 use anyhow::{Context as _, Result};
@@ -19,7 +20,24 @@ const RED: Style = Style::new()
     .bold();
 
 pub fn command() -> clap::Command {
-    Cli::command().help_template(help::template())
+    Cli::command()
+        .version(version())
+        .help_template(help::template())
+}
+
+fn version() -> &'static str {
+    static VERSION: OnceLock<String> = OnceLock::new();
+
+    VERSION
+        .get_or_init(|| {
+            let version = env!("CARGO_PKG_VERSION");
+
+            match option_env!("HOD_COMMIT") {
+                Some(commit) => format!("{version} ({})", commit.get(..7).unwrap_or(commit)),
+                None => version.to_owned(),
+            }
+        })
+        .as_str()
 }
 
 pub fn run() -> Result<ExitCode> {

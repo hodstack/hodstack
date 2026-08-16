@@ -14,8 +14,8 @@ homepage = "https://github.com/hodstack/hodstack"
 license = "MIT"
 keywords = ["agent", "skills", "cli", "claude", "codex"]
 categories = ["command-line-utilities", "development-tools"]
-publish = false
-include = ["src/**/*.rs", "Cargo.toml", "LICENSE.md"]
+readme = "README.md"
+include = ["src/**/*.rs", "templates/*.md", "tests/**", "README.md", "Cargo.toml"]
 
 [[bin]]
 name = "hod"

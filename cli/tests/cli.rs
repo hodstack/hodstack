@@ -56,11 +56,11 @@ fn init_writes_both_files() {
     assert_eq!(code, std::process::ExitCode::SUCCESS);
     assert_eq!(
         fs::read_to_string(dir.path().join("AGENTS.md")).unwrap(),
-        include_str!("../../skills/templates/AGENTS.md")
+        include_str!("../templates/AGENTS.md")
     );
     assert_eq!(
         fs::read_to_string(dir.path().join("CLAUDE.md")).unwrap(),
-        include_str!("../../skills/templates/CLAUDE.md")
+        include_str!("../templates/CLAUDE.md")
     );
 }
 

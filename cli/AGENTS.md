@@ -20,7 +20,7 @@ Write the program in Rust. Compile one binary with the name `hod`. Give the bina
 
 The program gives four commands. `init` writes `AGENTS.md` and `CLAUDE.md` into the current directory. `run` starts a skill with a prompt. `list` names each installed skill. `completions` writes a completion script for a shell.
 
-The constants in `src/init.rs` read `../../skills/templates/` with `include_str!`, thus the text of the two files sits in the `skills` directory and the binary carries no dependence on a file on the computer of the user.
+The constants in `src/init.rs` read `templates/` with `include_str!`, thus the binary carries no dependence on a file on the computer of the user. Write no path that leaves `cli/` in an `include_str!`: `cargo package` writes a crate that does not build. The key `include` in `Cargo.toml` names `templates/*.md`, thus the package carries the two files. Write a new file that the binary reads into that key too.
 
 The function `init` tests each path before it writes one file, thus the command never replaces the work of the user and never leaves one file of the pair behind.
 
@@ -92,8 +92,30 @@ The file `.github/workflows/ci.yml` gives one job for each task. The job `Rust` 
 
 ## 6. Distribution
 
-TBD.
+The branch `0.x` is the release. The project writes no tag for a version today. The workflow `.github/workflows/release.yml` starts when the workflow `CI` reports success on that branch, thus a push gives new artifacts and a build that fails a check reaches no user.
 
-The manifest holds `publish = false`, because this section gives no method. Remove that line when this section gives one.
+The workflow moves the tag `edge` to the commit and writes each artifact to the release with that tag. The address of each artifact thus stays the same: `https://github.com/hodstack/hodstack/releases/download/edge/hod-<target>.tar.gz`. Do not write the version into a file name, and do not create a second release: `install.sh`, `install.ps1` and `npm/install.js` hold that address.
 
-The two constants in `src/init.rs` read `../../skills/templates/`, and that path leaves the package. Move the two template files into `cli/` before you give this crate a distribution method, or `cargo package` writes a crate that does not build.
+The job `build` gives five targets: `aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl` and `x86_64-pc-windows-msvc`. Linux uses musl, because musl gives a static binary and the binary thus has no dependence on the glibc version of the computer of the user.
+
+Each archive carries the binary and `LICENSE.md` in the format `tar.gz`, for each target. Windows 10 and later carry `tar.exe`, thus one format serves each installer.
+
+The job `publish` writes `checksums.txt` from each archive. Each installer reads that file and stops when the sum does not agree. Keep that test in a new installer.
+
+The function `version` in `src/lib.rs` reads the variable `HOD_COMMIT` with `option_env!`. The job `build` gives that variable the commit, thus `hod --version` names the build. The variable is absent in a local build, thus the snapshot in `tests/snapshots/root.txt` holds the version alone.
+
+The job `homebrew` writes `Formula/hod.rb` in the repository `hodstack/homebrew-tap`. The formula carries the version `<crate version>-edge.<run number>`, because Homebrew names the file in its cache with the version. A version that does not change gives a checksum fault to a user who installed a build before.
+
+The job `npm` publishes the directory `npm/` with the same version and the tag `edge`. The package downloads the binary from the release with the tag `edge`, thus the version of the package names the build that published it and not the build that the user receives.
+
+The job `homebrew` needs the secret `TAP_TOKEN` and the job `npm` needs the secret `NPM_TOKEN`. A job reads its secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. A job without its secret does no step and reports success.
+
+The three installers sit at the top of the repository: `install.sh`, `install.ps1` and `npm/`. They install the binary of this directory, thus this section controls them. Write no comment in them. Refer to the `AGENTS.md` file at the top level, section 4.
+
+The job `publish` writes `install.sh` and `install.ps1` to the release with the tag `edge`. `README.md` gives the address of that file to the user, thus the project needs no website to install the binary.
+
+`install.sh` reads the variable `HOD_RELEASE_URL`. Give that variable a `file://` address to test the installer without a release.
+
+The crate `hod` goes to crates.io by hand. Run `cargo publish --dry-run` before each publication. No workflow publishes the crate, because the branch `0.x` gives many builds for one version and crates.io accepts one version one time.
+
+`README.md` in this directory is the page of the crate on crates.io. The lint `clippy::cargo_common_metadata` asks for the key `readme`, and a path that leaves `cli/` does not reach the package. Keep this file short and give the address of the repository. Obey the `AGENTS.md` file at the top level, section 3: a user reads this file.

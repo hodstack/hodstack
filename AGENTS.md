@@ -9,6 +9,8 @@ The work happens in one repository: `hodstack/hodstack`. It holds two directorie
 
 Change the skill and the command that runs it in one commit and release them under one tag.
 
+The files `install.sh` and `install.ps1` and the directory `npm/` at the top of the repository install the `hod` binary. `cli/AGENTS.md`, section 6, controls them.
+
 Three files at the top of the repository control each directory: `.gitignore`, `typos.toml` and `LICENSE.md`. Give a path in `.gitignore` and in `typos.toml` the prefix `/cli/` or `/skills/`, because the file sits one directory above them. Do not write a second file with one of these names in a directory.
 
 ---

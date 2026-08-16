@@ -8,8 +8,8 @@ use anyhow::{Context as _, Result};
 
 const BOLD: Style = Style::new().bold();
 
-const CLAUDE: &str = include_str!("../../skills/templates/CLAUDE.md");
-const AGENTS: &str = include_str!("../../skills/templates/AGENTS.md");
+const CLAUDE: &str = include_str!("../templates/CLAUDE.md");
+const AGENTS: &str = include_str!("../templates/AGENTS.md");
 
 const FILES: [(&str, &str); 2] = [("AGENTS.md", AGENTS), ("CLAUDE.md", CLAUDE)];
 

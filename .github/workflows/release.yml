@@ -1,0 +1,246 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [0.x]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  TAG: edge
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        working-directory: cli
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+          - target: x86_64-apple-darwin
+            runner: macos-latest
+          - target: x86_64-unknown-linux-musl
+            runner: ubuntu-latest
+          - target: aarch64-unknown-linux-musl
+            runner: ubuntu-24.04-arm
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+          key: ${{ matrix.target }}
+
+      - name: Install the musl toolchain
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes musl-tools
+
+      - name: Build
+        run: cargo build --locked --release --target ${{ matrix.target }}
+        env:
+          HOD_COMMIT: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+
+      - name: Pack
+        shell: bash
+        run: |
+          set -eu
+          name=hod
+          if [ "${{ runner.os }}" = "Windows" ]; then name=hod.exe; fi
+          staging="$(mktemp -d)"
+          cp "target/${{ matrix.target }}/release/$name" "$staging/$name"
+          cp ../LICENSE.md "$staging/LICENSE.md"
+          mkdir -p dist
+          tar -czf "dist/hod-${{ matrix.target }}.tar.gz" -C "$staging" "$name" LICENSE.md
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hod-${{ matrix.target }}
+          path: cli/dist/hod-${{ matrix.target }}.tar.gz
+          retention-days: 1
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Read the version
+        id: version
+        run: |
+          set -eu
+          crate="$(sed -n 's/^version = "\(.*\)"$/\1/p' cli/Cargo.toml | head -n 1)"
+          echo "version=$crate-edge.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Write the checksums
+        working-directory: dist
+        run: sha256sum hod-*.tar.gz > checksums.txt
+
+      - name: Move the tag
+        env:
+          SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+        run: |
+          set -eu
+          git tag --force "$TAG" "$SHA"
+          git push --force origin "refs/tags/$TAG"
+
+      - name: Write the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+        run: |
+          set -eu
+          notes="$(printf '%s\n' \
+            "The build of \`0.x\`, at commit \`${SHA}\`." \
+            "" \
+            "\`\`\`" \
+            "curl -fsSL https://github.com/hodstack/hodstack/releases/download/edge/install.sh | sh" \
+            "\`\`\`" \
+            "" \
+            "The address of each file below stays the same. Every push to \`0.x\` writes this release again.")"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes "$notes" --prerelease
+          else
+            gh release create "$TAG" --title "Edge" --notes "$notes" --prerelease --target "$SHA"
+          fi
+          gh release upload "$TAG" dist/* install.sh install.ps1 --clobber
+
+  homebrew:
+    name: Homebrew
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        if: env.TAP_TOKEN != ''
+        with:
+          repository: hodstack/homebrew-tap
+          token: ${{ secrets.TAP_TOKEN }}
+
+      - uses: actions/download-artifact@v8
+        if: env.TAP_TOKEN != ''
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Write the formula
+        if: env.TAP_TOKEN != ''
+        env:
+          VERSION: ${{ needs.publish.outputs.version }}
+        run: |
+          set -eu
+          url="https://github.com/hodstack/hodstack/releases/download/$TAG"
+          sum() { sha256sum "dist/hod-$1.tar.gz" | cut -d ' ' -f 1; }
+          mkdir -p Formula
+          cat > Formula/hod.rb <<FORMULA
+          class Hod < Formula
+            desc "Run a Hodstack skill with a coding agent from your terminal"
+            homepage "https://github.com/hodstack/hodstack"
+            version "$VERSION"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "$url/hod-aarch64-apple-darwin.tar.gz"
+                sha256 "$(sum aarch64-apple-darwin)"
+              end
+              on_intel do
+                url "$url/hod-x86_64-apple-darwin.tar.gz"
+                sha256 "$(sum x86_64-apple-darwin)"
+              end
+            end
+
+            on_linux do
+              on_arm do
+                url "$url/hod-aarch64-unknown-linux-musl.tar.gz"
+                sha256 "$(sum aarch64-unknown-linux-musl)"
+              end
+              on_intel do
+                url "$url/hod-x86_64-unknown-linux-musl.tar.gz"
+                sha256 "$(sum x86_64-unknown-linux-musl)"
+              end
+            end
+
+            def install
+              bin.install "hod"
+            end
+
+            test do
+              assert_match "hod", shell_output("#{bin}/hod --version")
+            end
+          end
+          FORMULA
+
+      - name: Push the formula
+        if: env.TAP_TOKEN != ''
+        env:
+          VERSION: ${{ needs.publish.outputs.version }}
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/hod.rb
+          git diff --staged --quiet || git commit -m "hod $VERSION"
+          git push
+
+  npm:
+    name: npm
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        if: env.NPM_TOKEN != ''
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v7
+        if: env.NPM_TOKEN != ''
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Publish
+        if: env.NPM_TOKEN != ''
+        working-directory: npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSION: ${{ needs.publish.outputs.version }}
+        run: |
+          set -eu
+          npm version "$VERSION" --no-git-tag-version
+          npm publish --tag edge --access public

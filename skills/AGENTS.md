@@ -33,9 +33,6 @@ Before you change the layout, test these three statements against the text of th
 │       ├── SKILL.md
 │       ├── references/*.md
 │       └── scripts/*.sh
-├── templates/                   # the files that `hod init` writes
-│   ├── AGENTS.md
-│   └── CLAUDE.md
 ├── .claude-plugin/plugin.json   # the Claude Code channel (a list of the skills)
 ├── .agents/                     # writing-skills.md, invocation-model.md
 ├── AGENTS.md                    # the rules
@@ -49,7 +46,7 @@ Do not make a directory for a subject. If the set needs groups by subject, put t
 
 The interior directory also has the name `skills`, thus each path has this form: `skills/skills/pr-review/`. The standard makes the interior name necessary. Do not change it.
 
-The directory `templates` holds the two files that `hod init` writes into the directory of a user. Write no fact about Hodstack in them: they must work in any project. The crate `hod` reads them with `include_str!`, thus a change to one of them takes effect on the next build of the program.
+The two files that `hod init` writes sit in `cli/templates/`, not in this directory. The crate `hod` reads them with `include_str!`, and `cargo package` writes a crate that does not build when a path leaves `cli/`. Refer to `cli/AGENTS.md`, section 6.
 
 ---
 
