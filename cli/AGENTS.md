@@ -114,7 +114,7 @@ The job `npm` publishes the directory `npm/` with the same version and the dist-
 
 The job publishes the same files three times, with the names `hodstack`, `@hodstack/cli` and `@hodstack/hod`. `npm pkg set name=...` writes each name before each publication. The name `hod` on npm belongs to a different supplier. The two names with the prefix `@hodstack/` need the organization `hodstack` on npm.
 
-No dist-tag `latest` exists today, thus `npm install hodstack` reports a fault and `npm install hodstack@edge` works. Publish a version to the tag `latest` when `hod run` has a body, and correct `README.md` and `npm/README.md` in the same change.
+The dist-tag `latest` holds the first version, because npm gives that tag to the first version of a new package. The job moves the tag `edge` only. The package downloads the newest release at the installation, thus each dist-tag gives the newest binary. Move the tag `latest` by hand when `hod run` has a body.
 
 The job `npm` needs the secret `NPM_TOKEN`. The job reads that secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. The job without its secret does no step and reports success.
 
