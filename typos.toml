@@ -1,0 +1,11 @@
+[files]
+extend-exclude = [
+  "/cli/.agents/",
+  "/cli/.claude/",
+  "/cli/target/",
+  "/cli/supply-chain/",
+]
+
+[default.extend-words]
+hod = "hod"
+hodstack = "hodstack"

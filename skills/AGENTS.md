@@ -33,6 +33,9 @@ Before you change the layout, test these three statements against the text of th
 │       ├── SKILL.md
 │       ├── references/*.md
 │       └── scripts/*.sh
+├── templates/                   # the files that `hod init` writes
+│   ├── AGENTS.md
+│   └── CLAUDE.md
 ├── .claude-plugin/plugin.json   # the Claude Code channel (a list of the skills)
 ├── .agents/                     # writing-skills.md, invocation-model.md
 ├── AGENTS.md                    # the rules
@@ -45,6 +48,8 @@ Before you change the layout, test these three statements against the text of th
 Do not make a directory for a subject. If the set needs groups by subject, put them in `keywords`, in the README, or in the name of the skill. Do not put them in the path.
 
 The interior directory also has the name `skills`, thus each path has this form: `skills/skills/pr-review/`. The standard makes the interior name necessary. Do not change it.
+
+The directory `templates` holds the two files that `hod init` writes into the directory of a user. Write no fact about Hodstack in them: they must work in any project. The crate `hod` reads them with `include_str!`, thus a change to one of them takes effect on the next build of the program.
 
 ---
 
@@ -65,7 +70,15 @@ With `hod`, the user can start each skill directly. The program is the start met
 
 ---
 
-## 4. The rules for the manifest
+## 4. How to write the text of a skill
+
+A coding agent reads each file of a skill. Write an instruction that the agent obeys during its work, then stop. Obey section 1 and section 2 of the `AGENTS.md` file at the top level: the imperative, the active voice, one instruction in one sentence, and the exact path, command and name.
+
+Delete a sentence that says the name of the skill again. Delete a sentence that gives background, such as the history of a tool or the reason that the project made a decision. Delete a sentence that a different file holds, and give the path of that file instead. Give a reason only when the reason changes the next decision of the agent.
+
+---
+
+## 5. The rules for the manifest
 
 - Give `name` a value that agrees with `[a-z0-9.-]+`. Use 1 to 64 characters. Start and end the value with a letter or a number. Do not put two `-` characters together or two `.` characters together. The name `hodstack` obeys these rules.
 - The schema of `plugin.json` is closed (`additionalProperties: false`). Use these properties only: `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords` and `extensions`. Put all other data in `extensions.<reverse domain name>`. Only `$schema` and `name` are necessary, thus a minimum manifest has two lines.
@@ -75,6 +88,6 @@ With `hod`, the user can start each skill directly. The program is the start met
 
 ---
 
-## 5. Distribution
+## 6. Distribution
 
 TBD.

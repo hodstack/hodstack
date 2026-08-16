@@ -1,0 +1,158 @@
+name: CI
+
+on:
+  push:
+    branches: [0.x]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    working-directory: cli
+
+jobs:
+  rust:
+    name: Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Docs
+        run: cargo doc --locked --no-deps
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+      - name: Test
+        run: cargo test --locked
+
+      - name: Build
+        run: cargo build --locked --release
+
+  msrv:
+    name: MSRV 1.85.0
+    runs-on: ubuntu-latest
+    env:
+      RUSTUP_TOOLCHAIN: "1.85.0"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@1.85.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+      - run: cargo check --locked --all-targets
+
+  typos:
+    name: Typos
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v5
+      - uses: crate-ci/typos-action@v1
+
+  audit:
+    name: cargo-audit
+    runs-on: ubuntu-latest
+    env:
+      CARGO_AUDIT_VERSION: 0.22.1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/cargo-audit
+          key: cargo-audit-bin-${{ env.CARGO_AUDIT_VERSION }}
+      - run: echo "${{ runner.tool_cache }}/cargo-audit/bin" >> $GITHUB_PATH
+      - run: cargo install --root ${{ runner.tool_cache }}/cargo-audit --version ${{ env.CARGO_AUDIT_VERSION }} cargo-audit --locked
+      - run: cargo audit
+
+  deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    env:
+      CARGO_DENY_VERSION: 0.19.6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/cargo-deny
+          key: cargo-deny-bin-${{ env.CARGO_DENY_VERSION }}
+      - run: echo "${{ runner.tool_cache }}/cargo-deny/bin" >> $GITHUB_PATH
+      - run: cargo install --root ${{ runner.tool_cache }}/cargo-deny --version ${{ env.CARGO_DENY_VERSION }} cargo-deny --locked
+      - run: cargo deny check
+
+  vet:
+    name: cargo-vet
+    runs-on: ubuntu-latest
+    env:
+      CARGO_VET_VERSION: 0.10.0
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/cargo-vet
+          key: cargo-vet-bin-${{ env.CARGO_VET_VERSION }}
+      - run: echo "${{ runner.tool_cache }}/cargo-vet/bin" >> $GITHUB_PATH
+      - run: cargo install --root ${{ runner.tool_cache }}/cargo-vet --version ${{ env.CARGO_VET_VERSION }} cargo-vet --locked
+      - run: cargo vet --locked
+
+  machete:
+    name: cargo-machete
+    runs-on: ubuntu-latest
+    env:
+      CARGO_MACHETE_VERSION: 0.9.1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/cargo-machete
+          key: cargo-machete-bin-${{ env.CARGO_MACHETE_VERSION }}
+      - run: echo "${{ runner.tool_cache }}/cargo-machete/bin" >> $GITHUB_PATH
+      - run: cargo install --root ${{ runner.tool_cache }}/cargo-machete --version ${{ env.CARGO_MACHETE_VERSION }} cargo-machete --locked
+      - run: cargo machete
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      CARGO_LLVM_COV_VERSION: 0.6.21
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/cargo-llvm-cov
+          key: cargo-llvm-cov-bin-${{ env.CARGO_LLVM_COV_VERSION }}
+      - run: echo "${{ runner.tool_cache }}/cargo-llvm-cov/bin" >> $GITHUB_PATH
+      - run: cargo install --root ${{ runner.tool_cache }}/cargo-llvm-cov --version ${{ env.CARGO_LLVM_COV_VERSION }} cargo-llvm-cov --locked
+      - run: cargo llvm-cov --all-features --locked

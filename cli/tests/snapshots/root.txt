@@ -1,0 +1,17 @@
+
+hod 0.1.0 — Hodstack makes coding agents more productive.
+
+USAGE
+  hod <command> [options]
+
+COMMANDS
+  init         Create AGENTS.md and CLAUDE.md in this directory
+  run          Run a skill with a prompt
+  list         List the installed skills
+  completions  Print a shell completion script
+
+OPTIONS
+  -h, --help     Print help
+  -V, --version  Print version
+
+github.com/hodstack/hodstack

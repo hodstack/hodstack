@@ -1,0 +1,6 @@
+.DS_Store
+
+/cli/target/
+
+/cli/.agents/skills/
+/cli/.claude/skills/

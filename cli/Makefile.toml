@@ -1,0 +1,108 @@
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[env]
+CARGO_TERM_COLOR = "always"
+
+[tasks.lint]
+description = "Auto-fix formatting and clippy issues"
+dependencies = ["lint-fmt", "lint-clippy"]
+
+[tasks.lint-fmt]
+command = "cargo"
+args = ["fmt", "--all"]
+
+[tasks.lint-clippy]
+command = "cargo"
+args = [
+    "clippy", "--all-targets", "--all-features", "--fix",
+    "--allow-dirty", "--allow-staged", "--", "-D", "warnings",
+]
+
+[tasks."test:lint"]
+description = "Verify formatting and clippy without modifying files"
+dependencies = ["test-fmt", "test-clippy"]
+
+[tasks.test-fmt]
+command = "cargo"
+args = ["fmt", "--all", "--", "--check"]
+
+[tasks.test-clippy]
+command = "cargo"
+args = [
+    "clippy", "--all-targets", "--all-features", "--locked",
+    "--", "-D", "warnings",
+]
+
+[tasks."test:unit"]
+description = "Run all unit and integration tests"
+command = "cargo"
+args = ["test", "--all-features", "--locked"]
+
+[tasks."test:docs"]
+description = "Build the documentation and deny each rustdoc warning"
+env = { RUSTDOCFLAGS = "-D warnings" }
+command = "cargo"
+args = ["doc", "--no-deps", "--all-features", "--locked"]
+
+[tasks."test:audit"]
+description = "Check dependencies against the RustSec advisory database"
+install_crate = { crate_name = "cargo-audit", binary = "cargo-audit", test_arg = "--version" }
+command = "cargo"
+args = ["audit"]
+
+[tasks."test:deny"]
+description = "Check dependency advisories, licenses, bans, and sources"
+install_crate = { crate_name = "cargo-deny", binary = "cargo-deny", test_arg = "--version", version = "0.19.6" }
+command = "cargo"
+args = ["deny", "check"]
+
+[tasks."test:vet"]
+description = "Check dependencies against the cargo-vet supply-chain audits"
+install_crate = { crate_name = "cargo-vet", binary = "cargo-vet", test_arg = "--version", version = "0.10.0" }
+command = "cargo"
+args = ["vet", "--locked"]
+
+[tasks."test:typos"]
+description = "Check for typos across the repository"
+install_crate = { crate_name = "typos-cli", binary = "typos", test_arg = "--version", version = "1.42.3" }
+cwd = ".."
+command = "typos"
+
+[tasks."test:machete"]
+description = "Check for unused Cargo dependencies"
+install_crate = { crate_name = "cargo-machete", binary = "cargo-machete", test_arg = "--version", version = "0.9.1" }
+command = "cargo"
+args = ["machete"]
+
+[tasks."test:coverage"]
+description = "Run tests with coverage instrumentation"
+install_crate = { crate_name = "cargo-llvm-cov", binary = "cargo-llvm-cov", test_arg = "--version", version = "0.6.21" }
+command = "cargo"
+args = ["llvm-cov", "--all-features", "--locked"]
+
+[tasks."test:msrv"]
+description = "Check that the crate builds on the declared MSRV (1.85)"
+script_runner = "@shell"
+script = '''
+cargo +1.85.0 check --all-targets --locked
+'''
+
+[tasks.test]
+description = "Run every check: lint + unit + docs + audit + deny + vet + typos + machete + coverage + msrv"
+dependencies = [
+    "test:lint",
+    "test:unit",
+    "test:docs",
+    "test:audit",
+    "test:deny",
+    "test:vet",
+    "test:typos",
+    "test:machete",
+    "test:coverage",
+    "test:msrv",
+]
+
+[tasks.default]
+alias = "test"
