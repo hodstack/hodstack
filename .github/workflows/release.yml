@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    name: ${{ matrix.target }}
+    name: Build ${{ matrix.target }}
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ${{ matrix.runner }}
     defaults:
@@ -82,7 +82,7 @@ jobs:
           retention-days: 1
 
   publish:
-    name: Publish
+    name: Publish cargo
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -139,7 +139,7 @@ jobs:
             | while read -r old; do gh release delete "$old" --yes --cleanup-tag; done
 
   npm:
-    name: npm
+    name: Publish npm
     needs: publish
     runs-on: ubuntu-latest
     env:
