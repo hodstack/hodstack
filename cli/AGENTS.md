@@ -88,6 +88,8 @@ The file `.gitignore` sits at the top of the repository and ignores `/cli/.agent
 
 The file `.github/workflows/ci.yml` gives one job for each task. The job `Rust` runs the format, the clippy, the documentation, the tests and the release build. The other jobs run one tool each.
 
+The organization `hodstack` refuses an action that a tag or a branch names. Write the full commit SHA of the action after each `uses:` in `.github/workflows/`, then write the version in a comment after the SHA, because Dependabot reads that comment and raises the SHA with it. Give `dtolnay/rust-toolchain` the SHA of the tag `v1` and name the toolchain in the input `toolchain`, because the action reads the toolchain from the ref when that input is absent.
+
 ---
 
 ## 6. Distribution
