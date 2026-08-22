@@ -113,6 +113,79 @@ fn relative(skill: &Path, file: &Path) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::front::unquote;
+
+    fn metadata(skill: &Skill) -> &str {
+        skill
+            .files
+            .iter()
+            .find(|(file, _)| file == "agents/openai.yaml")
+            .map_or_else(
+                || panic!("the skill `{}` holds no `agents/openai.yaml`", skill.name),
+                |(_, text)| text.as_str(),
+            )
+    }
+
+    fn value<'a>(text: &'a str, key: &str) -> Option<&'a str> {
+        text.lines()
+            .filter_map(|line| line.trim().split_once(':'))
+            .find(|(name, _)| *name == key)
+            .map(|(_, value)| unquote(value.trim()))
+    }
+
+    #[test]
+    fn each_skill_carries_a_name_that_agrees_with_its_directory() {
+        for skill in shipped() {
+            assert_eq!(
+                skill.front().name,
+                skill.name,
+                "the front matter of `{}` names a different skill",
+                skill.name
+            );
+        }
+    }
+
+    #[test]
+    fn each_skill_carries_a_description() {
+        for skill in shipped() {
+            assert!(
+                !skill.front().description.is_empty(),
+                "the skill `{}` carries no description, thus no client names it",
+                skill.name
+            );
+        }
+    }
+
+    #[test]
+    fn each_skill_carries_the_metadata_of_codex() {
+        for skill in shipped() {
+            let metadata = metadata(&skill);
+
+            for key in ["display_name", "short_description"] {
+                let value = value(metadata, key);
+
+                assert!(
+                    value.is_some_and(|value| !value.is_empty()),
+                    "the skill `{}` gives `{key}` no value in `agents/openai.yaml`",
+                    skill.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_user_skill_carries_the_two_properties_of_a_user_skill() {
+        for skill in shipped() {
+            let implicit = value(metadata(&skill), "allow_implicit_invocation");
+
+            assert_eq!(
+                skill.front().user,
+                implicit == Some("false"),
+                "the skill `{}` is a user skill in one client and a model skill in the other",
+                skill.name
+            );
+        }
+    }
 
     #[test]
     fn no_skill_takes_the_name_of_a_command() {

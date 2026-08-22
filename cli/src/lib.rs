@@ -1,3 +1,4 @@
+mod agent;
 mod cli;
 mod front;
 mod help;
@@ -21,7 +22,6 @@ use clap::{CommandFactory as _, FromArgMatches as _};
 
 use crate::cli::{Cli, Command};
 use crate::project::Project;
-use crate::skills::Skill;
 use crate::sync::Mode;
 
 pub use crate::init::init;
@@ -61,12 +61,12 @@ pub fn run() -> Result<ExitCode> {
     let mut out = anstream::stdout().lock();
 
     let Some(command) = cli.command else {
-        let Some((skill, prompt)) = cli.skill.zip(cli.prompt) else {
+        let Some(skill) = cli.skill else {
             command().print_help()?;
             return Ok(ExitCode::SUCCESS);
         };
 
-        let code = start(&skill, &prompt)?;
+        let code = start(&skill)?;
 
         out.flush()?;
         update::notice(&mut anstream::stderr().lock());
@@ -159,22 +159,14 @@ pub fn report(error: &anyhow::Error) -> ExitCode {
     ExitCode::FAILURE
 }
 
-fn start(name: &str, prompt: &str) -> Result<ExitCode> {
+fn start(name: &str) -> Result<ExitCode> {
     let project = Project::new(&here()?);
 
     let Some(skill) = project.skill(name)? else {
         bail!("no skill has the name `{name}`; run `hod list` to name each skill")
     };
 
-    Ok(begin(&skill, prompt))
-}
-
-#[expect(
-    clippy::unimplemented,
-    reason = "skeleton: `hod <skill> <prompt>` has no body today"
-)]
-fn begin(_skill: &Skill, _prompt: &str) -> ExitCode {
-    unimplemented!("`hod <skill> <prompt>` has no body today")
+    agent::start(agent::find()?, &format!("/{}", skill.name))
 }
 
 #[expect(

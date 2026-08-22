@@ -1,6 +1,6 @@
 # Hodstack CLI
 
-This directory holds the `hod` program. The program runs the skills. The command `hod <skill> <prompt>` starts a coding agent with that skill and that prompt.
+This directory holds the `hod` program. The program runs the skills. The command `hod <skill>` starts the coding agent of the user with `/<skill>` as its first prompt.
 
 The `AGENTS.md` file at the top level gives the intention of the project and the rules for this file. This file gives the decisions for this directory.
 
@@ -8,7 +8,7 @@ The `AGENTS.md` file at the top level gives the intention of the project and the
 
 ## 1. The function of the program
 
-The `skills` directory holds the material. This directory moves the material to the work. The user runs a command such as `hod pr:review 1042` in a terminal, in CI, or in a hook. A skill carries a colon on the command line and a hyphen on the disk: the command `hod pr:review` starts the skill in `skills/skills/pr-review/`.
+The `skills` directory holds the material. This directory moves the material to the work. The user runs a command such as `hod pr-review` in a terminal. A skill carries a hyphen on the command line and on the disk: the command `hod pr-review` starts the skill in `skills/skills/pr-review/`. Write no colon in the name of a skill, because each client reads the name of the directory and a slash command holds no colon.
 
 The user can start each skill with this program. The Agent Plugins standard has no method to show that a skill is for a user or for a model (refer to `skills/AGENTS.md`, section 3). This program is the start method that the standard does not have.
 
@@ -26,7 +26,7 @@ The program gives four commands and one skill. `init` writes the files of a proj
 
 The function `report` in `src/lib.rs` gives the exit code 0 for a broken pipe. The command `hod | head` closes the output before the program writes each line, thus the program stops without a message and reports success.
 
-`init` and `update` have a body today. Write `unimplemented!()` in a command without a body, and write `#[expect(clippy::unimplemented, reason = "...")]` above that command. The lint `clippy::unimplemented` carries the level `deny` in `Cargo.toml`, thus the compiler reports the expectation as unfulfilled on the day that the command receives a body. Delete the attribute in the same change.
+`init`, `update` and `hod <skill>` have a body today. Write `unimplemented!()` in a command without a body, and write `#[expect(clippy::unimplemented, reason = "...")]` above that command. The lint `clippy::unimplemented` carries the level `deny` in `Cargo.toml`, thus the compiler reports the expectation as unfulfilled on the day that the command receives a body. Delete the attribute in the same change.
 
 ---
 
@@ -114,7 +114,7 @@ The job `npm` publishes the directory `npm/` with the same version and the dist-
 
 The job publishes the same files three times, with the names `hodstack`, `@hodstack/cli` and `@hodstack/hod`. `npm pkg set name=...` writes each name before each publication. The name `hod` on npm belongs to a different supplier. The two names with the prefix `@hodstack/` need the organization `hodstack` on npm.
 
-The dist-tag `latest` holds the first version, because npm gives that tag to the first version of a new package. The job moves the tag `edge` only. The package downloads the newest release at the installation, thus each dist-tag gives the newest binary. Move the tag `latest` by hand when `hod <skill> <prompt>` has a body.
+The dist-tag `latest` holds the first version, because npm gives that tag to the first version of a new package. The job moves the tag `edge` only. The package downloads the newest release at the installation, thus each dist-tag gives the newest binary. Move the tag `latest` by hand at the first release that you announce to a user.
 
 The job `npm` needs the secret `NPM_TOKEN`. The job reads that secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. The job without its secret does no step and reports success.
 

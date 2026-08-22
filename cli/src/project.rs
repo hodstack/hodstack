@@ -98,8 +98,6 @@ impl Project {
     }
 
     pub fn skill(&self, name: &str) -> Result<Option<Skill>> {
-        let name = name.replace(':', "-");
-
         Ok(self
             .installed()?
             .into_iter()
@@ -204,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    fn a_colon_in_the_name_of_a_skill_is_a_hyphen_on_the_disk() {
+    fn the_name_of_a_skill_is_the_name_of_its_directory() {
         let dir = tempfile::tempdir().unwrap();
         let skill = dir.path().join(".hod/skills/pr-review");
         fs::create_dir_all(&skill).unwrap();
@@ -212,10 +210,10 @@ mod tests {
         let project = Project::new(dir.path());
 
         assert_eq!(
-            project.skill("pr:review").unwrap().map(|skill| skill.name),
+            project.skill("pr-review").unwrap().map(|skill| skill.name),
             Some("pr-review".to_owned())
         );
-        assert!(project.skill("pr:merge").unwrap().is_none());
+        assert!(project.skill("pr:review").unwrap().is_none());
     }
 
     #[test]

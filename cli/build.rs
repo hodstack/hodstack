@@ -15,8 +15,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if let Some(tree) = tree(&manifest) {
         for skill in read(&tree)? {
-            if !skill.join("SKILL.md").is_file() {
+            if !skill.is_dir() {
                 continue;
+            }
+
+            if !skill.join("SKILL.md").is_file() {
+                return Err(format!("`{}` holds no SKILL.md", skill.display()).into());
             }
 
             let name = name(&skill);

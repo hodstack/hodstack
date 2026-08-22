@@ -8,14 +8,14 @@ The `AGENTS.md` file at the top level gives the intention of the project and the
 
 ## 1. The format of a skill: Agent Plugins 1.0.0
 
-Obey the Agent Skills format of [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec). Each skill is one directory with a file with the exact name `SKILL.md`. That file carries `name` and `description` in its front matter, and `name` agrees with the name of the directory.
+Obey the Agent Skills format of [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec). Each skill is one directory with a file with the exact name `SKILL.md`. That file carries `name` and `description` in its front matter, and `name` agrees with the name of the directory. A test in `cli/src/skills.rs` reads each rule of this file about a skill that the binary carries, and `build.rs` stops the build for a directory in `skills/skills/` without a `SKILL.md`. Run `cargo test` in `cli/`.
 
 Two rules control the tree:
 
 1. **Keep each skill one level below `skills/`.** `hod` writes one flat directory into the project of the user, and the search of a directory of skills is not recursive in each client. The form `skills/<group>/<name>/` thus gives no group to the user.
 2. **Put material for one client in the place that the client reads.** Codex reads `agents/openai.yaml` in the directory of the skill.
 
-The colon carries the group. The command `hod pr:review` starts the skill in `skills/skills/pr-review/`. Refer to `cli/AGENTS.md`, section 1.
+The hyphen carries the group. The command `hod pr-review` starts the skill in `skills/skills/pr-review/`. Refer to `cli/AGENTS.md`, section 1.
 
 ---
 

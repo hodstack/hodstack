@@ -42,6 +42,18 @@ AGENTS.md            hod writes this
 
 Ask your agent to run `/learn` when it gets something wrong. It writes the rule, and the next session reads it.
 
+## Your skills
+
+Run a skill by its name:
+
+```sh
+hod deps-upgrade
+```
+
+`hod` opens the coding agent it finds on your PATH — `claude`, `codex`, `cursor-agent`, `opencode` or `gemini` — and hands it `/deps-upgrade`. Set `HOD_AGENT` to name a different one.
+
+`hod list` names every skill you have.
+
 ## Updates
 
 `hod` tells you when a newer build exists. One command installs it, whichever way you installed `hod`, and writes the files it owns again:

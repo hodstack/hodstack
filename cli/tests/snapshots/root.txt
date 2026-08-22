@@ -2,7 +2,7 @@
 hod 0.0.1 — Hodstack makes coding agents more productive.
 
 USAGE
-  hod <skill> <prompt>
+  hod <skill>
   hod <command> [options]
 
 COMMANDS

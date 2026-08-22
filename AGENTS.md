@@ -5,7 +5,7 @@ Hodstack makes coding agents more productive. It has two parts: a set of skills 
 The work happens in one repository: `hodstack/hodstack`. It holds two directories:
 
 - **`skills`** — the skills, as text. The directory uses the Agent Plugins standard. One tree supplies Claude Code, Codex, Cursor, Copilot, VS Code and other clients. For the layout, the rules and the package formats, refer to `skills/AGENTS.md`.
-- **`cli`** — the `hod` program. The command `hod <skill> <prompt>` starts a coding agent with that skill and that prompt. For the rules, refer to `cli/AGENTS.md`.
+- **`cli`** — the `hod` program. The command `hod <skill>` starts the coding agent of the user with that skill in its first prompt. For the rules, refer to `cli/AGENTS.md`.
 
 Change the skill and the command that runs it in one commit and release them under one tag.
 

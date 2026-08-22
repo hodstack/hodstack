@@ -8,7 +8,7 @@ use crate::help;
     version,
     about = "Hodstack makes coding agents more productive.",
     long_about = None,
-    override_usage = "hod <skill> <prompt>\n  hod <command> [options]",
+    override_usage = "hod <skill>\n  hod <command> [options]",
     args_conflicts_with_subcommands = true,
     disable_help_subcommand = true,
     styles = help::STYLES,
@@ -18,15 +18,8 @@ pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Command>,
 
-    #[arg(
-        value_name = "skill",
-        requires = "prompt",
-        help = "The name of the skill"
-    )]
+    #[arg(value_name = "skill", help = "The name of the skill")]
     pub skill: Option<String>,
-
-    #[arg(value_name = "prompt", help = "The prompt that the skill receives")]
-    pub prompt: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]

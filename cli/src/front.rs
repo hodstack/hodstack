@@ -52,7 +52,7 @@ fn field(line: &str) -> Option<(&str, &str)> {
     Some((key.trim(), unquote(value.trim())))
 }
 
-fn unquote(value: &str) -> &str {
+pub fn unquote(value: &str) -> &str {
     for quote in ['"', '\''] {
         if let Some(inner) = value.strip_prefix(quote) {
             if let Some(inner) = inner.strip_suffix(quote) {

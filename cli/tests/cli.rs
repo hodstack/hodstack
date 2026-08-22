@@ -46,16 +46,12 @@ fn no_argument_gives_the_root_screen_and_reports_success() {
 }
 
 #[test]
-fn an_unknown_command_is_a_fault_of_use() {
-    Command::new(HOD).arg("nope").assert().code(2);
+fn an_unknown_option_is_a_fault_of_use() {
+    Command::new(HOD).arg("--nope").assert().code(2);
 }
 
 #[test]
-fn each_command_without_a_body_fails() {
-    Command::new(HOD)
-        .args(["learn", "write a rule"])
-        .assert()
-        .failure();
+fn a_command_without_a_body_fails() {
     Command::new(HOD)
         .args(["completions", "zsh"])
         .assert()
@@ -63,9 +59,17 @@ fn each_command_without_a_body_fails() {
 }
 
 #[test]
+fn a_second_argument_after_a_skill_is_a_fault_of_use() {
+    Command::new(HOD)
+        .args(["learn", "write a rule"])
+        .assert()
+        .code(2);
+}
+
+#[test]
 fn a_skill_that_is_absent_is_a_fault() {
     Command::new(HOD)
-        .args(["nope", "a prompt"])
+        .arg("nope")
         .assert()
         .failure()
         .stderr_eq("error: no skill has the name `nope`; run `hod list` to name each skill\n");
@@ -225,6 +229,16 @@ fn init_writes_the_files_of_this_program_and_the_seed_of_the_user() {
         "the command materialized no skill"
     );
     assert!(dir.path().join(".agents/skills/learn/SKILL.md").is_file());
+    assert!(
+        dir.path()
+            .join(".claude/skills/deps-upgrade/SKILL.md")
+            .is_file()
+    );
+    assert!(
+        dir.path()
+            .join(".agents/skills/deps-upgrade/SKILL.md")
+            .is_file()
+    );
 }
 
 #[test]
@@ -289,7 +303,7 @@ fn update_project_writes_the_files_of_this_program_again() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+            "\n  Kept     .hod/project.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
         );
 
     assert_eq!(
@@ -309,7 +323,7 @@ fn update_project_keeps_a_file_that_the_user_wrote() {
         .assert()
         .failure()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+            "\n  Kept     .hod/project.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
         );
 
     assert_eq!(fs::read_to_string(&agents).unwrap(), "mine");
@@ -337,7 +351,7 @@ fn update_project_removes_a_skill_that_this_program_does_not_carry() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
+            "\n  Kept     .hod/project.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
         );
 
     assert!(!dir.path().join(".claude/skills/deploy").exists());
@@ -373,6 +387,91 @@ fn list_names_each_skill_of_the_program_and_of_the_project() {
         .assert()
         .success()
         .stdout_eq(
-            "\nUSER SKILLS\n  learn        Write one rule for this project in `.hod/rules/`.\n\nPROJECT SKILLS\n  deploy       Deploy this project.\n\n",
+            "\nUSER SKILLS\n  deps-upgrade  Raise each dependency of this project to a newer version and keep the tests green.\n  learn         Write one rule for this project in `.hod/rules/`.\n\nPROJECT SKILLS\n  deploy        Deploy this project.\n\n",
+        );
+}
+
+#[cfg(unix)]
+#[expect(clippy::unwrap_used, reason = "a test stops on a fault of its own")]
+fn agent(dir: &Path, binary: &str, record: &Path) -> PathBuf {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let bin = dir.join("bin");
+    fs::create_dir_all(&bin).unwrap();
+
+    let file = bin.join(binary);
+    fs::write(
+        &file,
+        format!("#!/bin/sh\nprintf '%s' \"$*\" > {}\n", record.display()),
+    )
+    .unwrap();
+    fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).unwrap();
+
+    bin
+}
+
+#[cfg(unix)]
+#[test]
+fn a_skill_starts_the_agent_with_its_slash_command() {
+    let dir = tempfile::tempdir().unwrap();
+    let record = dir.path().join("record");
+    let bin = agent(dir.path(), "claude", &record);
+
+    Command::new(HOD)
+        .arg("deps-upgrade")
+        .current_dir(dir.path())
+        .env("PATH", &bin)
+        .env_remove("HOD_AGENT")
+        .assert()
+        .success();
+
+    assert_eq!(fs::read_to_string(&record).unwrap(), "/deps-upgrade");
+}
+
+#[cfg(unix)]
+#[test]
+fn hod_agent_names_the_agent_that_starts() {
+    let dir = tempfile::tempdir().unwrap();
+    let record = dir.path().join("record");
+    agent(dir.path(), "claude", &record);
+    let bin = agent(dir.path(), "opencode", &record);
+
+    Command::new(HOD)
+        .arg("learn")
+        .current_dir(dir.path())
+        .env("PATH", &bin)
+        .env("HOD_AGENT", "opencode")
+        .assert()
+        .success();
+
+    assert_eq!(fs::read_to_string(&record).unwrap(), "--prompt /learn");
+}
+
+#[test]
+fn a_name_in_hod_agent_that_no_agent_carries_is_a_fault() {
+    Command::new(HOD)
+        .arg("learn")
+        .env("HOD_AGENT", "nope")
+        .assert()
+        .failure()
+        .stderr_eq(
+            "error: HOD_AGENT names `nope`; hod starts claude, codex, cursor-agent, opencode, gemini\n",
+        );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_computer_without_an_agent_is_a_fault() {
+    let dir = tempfile::tempdir().unwrap();
+
+    Command::new(HOD)
+        .arg("learn")
+        .current_dir(dir.path())
+        .env("PATH", dir.path())
+        .env_remove("HOD_AGENT")
+        .assert()
+        .failure()
+        .stderr_eq(
+            "error: no coding agent is on PATH; hod starts claude, codex, cursor-agent, opencode, gemini\n",
         );
 }
