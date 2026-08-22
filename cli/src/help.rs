@@ -1,3 +1,5 @@
+use std::env;
+
 use clap::builder::styling::{AnsiColor, Color, Style, Styles};
 
 const BOLD: Style = Style::new().bold();
@@ -37,6 +39,14 @@ pub fn template() -> String {
          {BOLD}OPTIONS{BOLD:#}\n\
          {{options}}\n\
          \n\
-         {DIM}github.com/hodstack/hodstack{DIM:#}"
+         {DIM}github.com/hodstack/hodstack{DIM:#}{}",
+        binary()
     )
+}
+
+fn binary() -> String {
+    match env::current_exe() {
+        Ok(path) => format!("\n{DIM}{}{DIM:#}", path.display()),
+        Err(_) => String::new(),
+    }
 }

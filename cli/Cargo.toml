@@ -17,6 +17,8 @@ categories = ["command-line-utilities", "development-tools"]
 readme = "README.md"
 include = [
     "/src/**/*.rs",
+    "/build.rs",
+    "/skills/**",
     "/templates/*.md",
     "/tests/**",
     "/README.md",

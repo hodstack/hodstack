@@ -22,19 +22,35 @@ With npm:
 npm install --global hodstack@edge
 ```
 
-Then write the two files that a coding agent reads:
+Then set up your project:
 
 ```sh
 hod init
 ```
 
+## Your project
+
+`hod init` writes `AGENTS.md`, and `hod` keeps writing it. Your own words go in `.hod/`:
+
+```
+AGENTS.md            hod writes this
+.hod/lock            hod writes this
+.hod/project.md      what this project is
+.hod/rules/*.md      one rule per file, listed in AGENTS.md
+.hod/skills/*/       your own skills
+```
+
+Ask your agent to run `/learn` when it gets something wrong. It writes the rule, and the next session reads it.
+
 ## Updates
 
-`hod` tells you when a newer build exists. One command installs it, whichever way you installed `hod`:
+`hod` tells you when a newer build exists. One command installs it, whichever way you installed `hod`, and writes the files it owns again:
 
 ```sh
 hod update
 ```
+
+Your files stay yours. `hod` writes over a file only when the file is still the one it wrote, and it tells you which files it kept.
 
 Set `HOD_NO_UPDATE_CHECK=1` to keep the notice quiet.
 

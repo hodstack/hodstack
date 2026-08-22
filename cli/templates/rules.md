@@ -1,8 +1,8 @@
 # The project
 
-Write the intention of the project here. Say what the project does and who uses it.
+Read `.hod/project.md` first. It holds the intention of this project.
 
-Give the command that installs the dependencies, the command that runs the tests and the command that starts the program. Name each directory and give its function.
+`hod` writes this file. Write no sentence in it, because `hod update` writes it again. Write the intention of the project in `.hod/project.md`. Write a rule in a file in `.hod/rules/`. Write a skill in a directory in `.hod/skills/`.
 
 ---
 
@@ -16,25 +16,25 @@ The public files are different. `README.md`, the website, the release notes and 
 
 ---
 
-## 2. How to write this file
+## 2. How to write for an agent
 
 Write in [ASD-STE100](https://www.asd-ste100.org) Simplified Technical English: one instruction in one sentence, the imperative, the active voice, one meaning for one word, no contraction, and no synonym for variety. The standard holds the full rules. Do not copy them here. Four items keep their exact form: a quotation from a standard, an identifier in the code, a path or a command, and a name from a different supplier.
 
 Write GitHub flavored Markdown. Put one `#` heading in a file. Write one paragraph on one line, thus a change stays small in `git diff`. Number the sections of a long file, thus a different file can point to "section 3". Put a path, a command and a name from the code in `code font`.
 
-Write the intention of the project in this file. Write a decision about one directory in the `AGENTS.md` file of that directory. If this file and the `AGENTS.md` file of a directory disagree, obey this file and correct the other file.
+Write the intention of the project in `.hod/project.md`. Write a decision about one directory in the `AGENTS.md` file of that directory. If `.hod/project.md` and the `AGENTS.md` file of a directory disagree, obey `.hod/project.md` and correct the other file.
 
-Write no new rule. This is the correct result of each task, and a task that adds a command, a module or a workflow does not change it. A rule needs a fault that happened: name the decision that you made wrong, or name the decision that this file refused to give you. A wrong change that you imagine is not a fault, thus write no rule to protect the code that you write today.
+Write no new rule. This is the correct result of each task, and a task that adds a command, a module or a workflow does not change it. A rule needs a fault that happened: name the decision that you made wrong, or name the decision that these files refused to give you. A wrong change that you imagine is not a fault, thus write no rule to protect the code that you write today.
 
 A fact that you learned during one task is not a rule. Use it in that task, then write no sentence for it.
 
-This file holds two items: the intention of the project, and a reason that the code cannot hold. Write no sentence below that level.
+`.hod/project.md` holds two items: the intention of the project, and a reason that the code cannot hold. Write no sentence below that level.
 
 Write no sentence for a fact that an agent finds when it reads the code. The cost of that read does not change the answer: a fact that four files hold is in the code. Put the fact in the code first, because a test stops the agent that breaks it and a sentence here does not.
 
-Ask the user before you write a rule. Give the fault, then write the rule in one sentence after the user agrees. Keep the length of the file: delete a rule in the same change, or ask the user to accept a longer file. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
+Ask the user before you write a rule. Give the fault, then call the skill `learn` after the user agrees. Keep the number of the rules: delete a rule file in the same change, or ask the user to accept one more rule. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
 
-Give no new part of the program its own section, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not add a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
+Give no new part of the program its own rule, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not write a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
 
 ---
 
@@ -60,7 +60,7 @@ Write no comment. Delete each comment that you find in a file that you change. T
 
 Put the intention in the code. Give each item a name that says what the item does. Give each value a type that makes a wrong value impossible. Split a long function into two functions with two names. A name and a type stay correct, and a comment does not.
 
-Write a reason that the code cannot hold in this file, with the path of the code. Do not write it above the code.
+Write a reason that the code cannot hold in a file in `.hod/rules/`, with the path of the code. Do not write it above the code.
 
 When a library reads the text of a comment as data, such as the description of a command on a help screen, write that text in an attribute or a field of that library instead.
 

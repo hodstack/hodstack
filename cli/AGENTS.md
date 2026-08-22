@@ -1,6 +1,6 @@
 # Hodstack CLI
 
-This directory holds the `hod` program. The program runs the skills. The command `hod run <skill> <prompt>` starts a coding agent with that skill and that prompt.
+This directory holds the `hod` program. The program runs the skills. The command `hod <skill> <prompt>` starts a coding agent with that skill and that prompt.
 
 The `AGENTS.md` file at the top level gives the intention of the project and the rules for this file. This file gives the decisions for this directory.
 
@@ -8,7 +8,7 @@ The `AGENTS.md` file at the top level gives the intention of the project and the
 
 ## 1. The function of the program
 
-The `skills` directory holds the material. This directory moves the material to the work. The user runs a command such as `hod run pr:review 1042` in a terminal, in CI, or in a hook. A skill carries a colon on the command line and a hyphen on the disk: the command `hod run pr:review` starts the skill in `skills/skills/pr-review/`.
+The `skills` directory holds the material. This directory moves the material to the work. The user runs a command such as `hod pr:review 1042` in a terminal, in CI, or in a hook. A skill carries a colon on the command line and a hyphen on the disk: the command `hod pr:review` starts the skill in `skills/skills/pr-review/`.
 
 The user can start each skill with this program. The Agent Plugins standard has no method to show that a skill is for a user or for a model (refer to `skills/AGENTS.md`, section 3). This program is the start method that the standard does not have.
 
@@ -18,11 +18,11 @@ Write the program in Rust. Compile one binary with the name `hod`. Give the bina
 
 ## 2. The commands
 
-The program gives five commands. `init` writes `AGENTS.md` and `CLAUDE.md` into the current directory. `run` starts a skill with a prompt. `list` names each installed skill. `update` installs the newest build over this one, and `update --check` names that build without an installation. `completions` writes a completion script for a shell.
+The program gives four commands and one skill. `init` writes the files of a project into the current directory. `list` names each skill. `update` installs the newest build over this one and writes the project files again, `update --project` writes those files alone, `update --check` reports each change without a write, and `update --force` writes over a file that the program does not own. `completions` writes a completion script for a shell. A first argument that is not one of these four names is a skill, thus a skill cannot take the name of a command and a test in `src/skills.rs` reads that.
 
-The constants in `src/init.rs` read `templates/` with `include_str!`, thus the binary carries no dependence on a file on the computer of the user. Write no path that leaves `cli/` in an `include_str!`: `cargo package` writes a crate that does not build. The key `include` in `Cargo.toml` names `templates/*.md`, thus the package carries the two files. Write a new file that the binary reads into that key too.
+`build.rs` reads `../skills/skills/` and writes a table of `include_str!` into `OUT_DIR`, thus the binary carries each skill and the skill of a release agrees with the program of that release. That directory is absent in the crate that `cargo package` writes, thus `cargo make publish` copies the tree to `cli/skills/` and `build.rs` reads that copy. `Cargo.toml` names `/skills/**`, `/build.rs` and `/templates/*.md` in the key `include`. Write a new file that the binary reads into that key too.
 
-The function `init` tests each path before it writes one file, thus the command never replaces the work of the user and never leaves one file of the pair behind.
+`.hod/lock` holds the sum of each file that the program wrote. The program writes over a file when the lock records it with the sum that the file still has, and it reports `Skipped` for each other file, thus a command never replaces the work of the user. `init` refuses each directory that holds `AGENTS.md` or `CLAUDE.md`, because the text of that file belongs to `.hod/project.md`.
 
 The function `report` in `src/lib.rs` gives the exit code 0 for a broken pipe. The command `hod | head` closes the output before the program writes each line, thus the program stops without a message and reports success.
 
@@ -84,7 +84,7 @@ The directory `supply-chain` holds the files of `cargo-vet`. `config.toml` names
 
 The file `typos.toml` sits at the top of the repository, not in this directory. The task `test:typos` thus runs one directory above this file. That file excludes `supply-chain/`, because `cargo vet` writes the crate names of other suppliers there.
 
-The file `.gitignore` sits at the top of the repository and ignores `/cli/.agents/skills/` and `/cli/.claude/skills/`. The file `skills-lock.json` records the source and the hash of each vendored skill.
+The file `.gitignore` sits at the top of the repository and ignores `/cli/.agents/skills/`, `/cli/.claude/skills/` and `/cli/skills/`. The file `skills-lock.json` records the source and the hash of each vendored skill.
 
 The file `.github/workflows/ci.yml` gives one job for each task. The job `Rust` runs the format, the clippy, the documentation, the tests and the release build. The other jobs run one tool each.
 
@@ -114,7 +114,7 @@ The job `npm` publishes the directory `npm/` with the same version and the dist-
 
 The job publishes the same files three times, with the names `hodstack`, `@hodstack/cli` and `@hodstack/hod`. `npm pkg set name=...` writes each name before each publication. The name `hod` on npm belongs to a different supplier. The two names with the prefix `@hodstack/` need the organization `hodstack` on npm.
 
-The dist-tag `latest` holds the first version, because npm gives that tag to the first version of a new package. The job moves the tag `edge` only. The package downloads the newest release at the installation, thus each dist-tag gives the newest binary. Move the tag `latest` by hand when `hod run` has a body.
+The dist-tag `latest` holds the first version, because npm gives that tag to the first version of a new package. The job moves the tag `edge` only. The package downloads the newest release at the installation, thus each dist-tag gives the newest binary. Move the tag `latest` by hand when `hod <skill> <prompt>` has a body.
 
 The job `npm` needs the secret `NPM_TOKEN`. The job reads that secret through a variable in `env`, because the context `secrets` does not reach the key `if` of a step. The job without its secret does no step and reports success.
 
@@ -124,6 +124,6 @@ The job `publish` writes `install.sh` and `install.ps1` to each release. `README
 
 `install.sh` reads the variable `HOD_RELEASE_URL`. Give that variable a `file://` address to test the installer without a release.
 
-The crate `hod` goes to crates.io by hand. Run `cargo publish --dry-run` before each publication. No workflow publishes the crate, because the branch `0.x` gives many builds for one version and crates.io accepts one version one time.
+The crate `hod` goes to crates.io by hand. Run `cargo make publish:test` before each publication, then `cargo make publish`. The two tasks copy the skills into `cli/skills/` and give `cargo` the flag `--allow-dirty`, because that copy is not in git. No workflow publishes the crate, because the branch `0.x` gives many builds for one version and crates.io accepts one version one time.
 
 `README.md` in this directory is the page of the crate on crates.io. The lint `clippy::cargo_common_metadata` asks for the key `readme`, and a path that leaves `cli/` does not reach the package. Keep this file short and give the address of the repository. Obey the `AGENTS.md` file at the top level, section 3: a user reads this file.

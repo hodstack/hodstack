@@ -104,5 +104,25 @@ dependencies = [
     "test:msrv",
 ]
 
+[tasks."publish:test"]
+description = "Build the crate that goes to crates.io, with the skills of this repository"
+script_runner = "@shell"
+script = '''
+rm -rf skills
+cp -R ../skills/skills skills
+cargo package --locked --allow-dirty
+rm -rf skills
+'''
+
+[tasks.publish]
+description = "Publish the crate to crates.io, with the skills of this repository"
+script_runner = "@shell"
+script = '''
+rm -rf skills
+cp -R ../skills/skills skills
+cargo publish --locked --allow-dirty
+rm -rf skills
+'''
+
 [tasks.default]
 alias = "test"

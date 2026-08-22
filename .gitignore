@@ -4,7 +4,10 @@
 
 /cli/.agents/skills/
 /cli/.claude/skills/
+/cli/skills/
 
 /npm/bin/hod
 /npm/bin/hod.exe
 /npm/node_modules/
+
+/playground

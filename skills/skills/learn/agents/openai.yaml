@@ -1,0 +1,5 @@
+interface:
+  display_name: "Learn"
+  short_description: "Write one rule for this project"
+policy:
+  allow_implicit_invocation: false

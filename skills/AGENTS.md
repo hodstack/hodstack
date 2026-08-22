@@ -1,23 +1,21 @@
 # Hodstack Skills
 
-This directory holds the skills, as text. It uses the Agent Plugins standard, thus one tree supplies Claude Code, Codex, Cursor, Copilot, VS Code and other clients.
+This directory holds the skills, as text. Each skill obeys the Agent Skills format of the Agent Plugins standard, thus `hod` writes one tree into the project of the user and Claude Code, Codex, Cursor, Copilot, VS Code and other clients read it.
 
-The `AGENTS.md` file at the top level gives the intention of the project and the rules for this file. This file gives the decisions for this directory: the layout, the rules, the set of skills, the package formats and the steps to add a skill.
+The `AGENTS.md` file at the top level gives the intention of the project and the rules for this file. This file gives the decisions for this directory: the layout, the rules, the start of a skill and its distribution.
 
 ---
 
-## 1. The package format: Agent Plugins 1.0.0
+## 1. The format of a skill: Agent Plugins 1.0.0
 
-Obey [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec). ChatGPT, Codex, Cursor, GitHub Copilot, Kiro and VS Code read this standard. Claude Code reads its own format.
+Obey the Agent Skills format of [Agent Plugins 1.0.0](https://github.com/agentplugins/agent-plugins-spec). Each skill is one directory with a file with the exact name `SKILL.md`. That file carries `name` and `description` in its front matter, and `name` agrees with the name of the directory.
 
 Two rules control the tree:
 
-1. **The search of `skills/` is not recursive.** Each immediate subdirectory that contains a file with the exact name `SKILL.md` is one skill. A client that obeys the standard cannot see a directory below that level.
-2. **Put material for one client in a namespace with a reverse domain name.** Use `extensions["com.example.client"]` in `plugin.json`, or a `com.example.client/` directory at the top level.
+1. **Keep each skill one level below `skills/`.** `hod` writes one flat directory into the project of the user, and the search of a directory of skills is not recursive in each client. The form `skills/<group>/<name>/` thus gives no group to the user.
+2. **Put material for one client in the place that the client reads.** Codex reads `agents/openai.yaml` in the directory of the skill.
 
-Rule 1 prevents the form `skills/<group>/<name>/`. Keep each skill one level below `skills/`.
-
-Before you change the layout, test these three statements against the text of the standard: the search of `skills/` is not recursive; material for one client goes in a namespace with a reverse domain name; the skill contract does not carry `disable-model-invocation`.
+The colon carries the group. The command `hod pr:review` starts the skill in `skills/skills/pr-review/`. Refer to `cli/AGENTS.md`, section 1.
 
 ---
 
@@ -25,28 +23,21 @@ Before you change the layout, test these three statements against the text of th
 
 ```
 <top level of the directory>
-├── plugin.json                  # Agent Plugins manifest ($schema, name: "hodstack", version,
-│                                #   description, author, homepage, repository, license,
-│                                #   keywords, extensions)
 ├── skills/                      # the skills — one level, no subgroups
-│   └── pr-review/
+│   └── learn/
 │       ├── SKILL.md
+│       ├── agents/openai.yaml   # the Codex metadata of this skill
 │       ├── references/*.md
 │       └── scripts/*.sh
-├── .claude-plugin/plugin.json   # the Claude Code channel (a list of the skills)
-├── .agents/                     # writing-skills.md, invocation-model.md
 ├── AGENTS.md                    # the rules
-├── CLAUDE.md                    # one line: @AGENTS.md
-├── CONTEXT.md                   # the terms for this directory
-├── README.md
-└── LICENSE
+└── CLAUDE.md                    # one line: @AGENTS.md
 ```
 
-Do not make a directory for a subject. If the set needs groups by subject, put them in `keywords`, in the README, or in the name of the skill. Do not put them in the path.
+Give the name of a skill the group first, such as `pr-review`, when the set needs groups by subject.
 
-The interior directory also has the name `skills`, thus each path has this form: `skills/skills/pr-review/`. The standard makes the interior name necessary. Do not change it.
+The interior directory also has the name `skills`, thus each path has this form: `skills/skills/learn/`. The standard gives that name, and `build.rs` in `cli/` reads that path. Do not change it.
 
-The two files that `hod init` writes sit in `cli/templates/`, not in this directory. The crate `hod` reads them with `include_str!`, and `cargo package` writes a crate that does not build when a path leaves `cli/`. Refer to `cli/AGENTS.md`, section 6.
+The files that `hod init` writes sit in `cli/templates/`, not in this directory. The crate `hod` reads them with `include_str!`, and `cargo package` writes a crate that does not build when a path leaves `cli/`. Refer to `cli/AGENTS.md`, section 2.
 
 ---
 
@@ -59,9 +50,9 @@ There are two types of skill.
 
 A user skill can use a model skill. A user skill must not use a different user skill.
 
-The standard has no method to show this difference. The property `disable-model-invocation: true` is a Claude Code property, and the skill contract in the standard (refer to [agentskills.io](https://agentskills.io/specification)) does not carry it, thus a different client receives a user skill as a model skill.
+The standard has no method to show this difference, and each client gives its own method. Give a user skill `disable-model-invocation: true` in the front matter of `SKILL.md`, for Claude Code. Give it `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, for Codex. Write the two properties together: a skill is a user skill in the two clients or in none.
 
-Therefore: **write the `description` of each user skill for two conditions.** The first condition is a request from the user. The second condition is a selection by a model. A skill must not depend on a request from a user for its correct operation. The file `.agents/writing-skills.md` holds this rule.
+A different client receives a user skill as a model skill, thus **write the `description` of each user skill for two conditions.** The first condition is a request from the user. The second condition is a selection by a model. A skill must not depend on a request from a user for its correct operation.
 
 With `hod`, the user can start each skill directly. The program is the start method that the standard does not have.
 
@@ -75,16 +66,6 @@ Delete a sentence that says the name of the skill again. Delete a sentence that 
 
 ---
 
-## 5. The rules for the manifest
+## 5. Distribution
 
-- Give `name` a value that agrees with `[a-z0-9.-]+`. Use 1 to 64 characters. Start and end the value with a letter or a number. Do not put two `-` characters together or two `.` characters together. The name `hodstack` obeys these rules.
-- The schema of `plugin.json` is closed (`additionalProperties: false`). Use these properties only: `$schema`, `name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords` and `extensions`. Put all other data in `extensions.<reverse domain name>`. Only `$schema` and `name` are necessary, thus a minimum manifest has two lines.
-- Start each path in the configuration with `./`. Keep each path in the top level of the plugin. Do not use a symbolic link that goes out of it.
-- Use a semantic version number in `version`. The clients use it to find a new version.
-- The `mcp.json` file is optional. Do not add it until there is a reason.
-
----
-
-## 6. Distribution
-
-TBD.
+`build.rs` in `cli/` reads this directory and writes each skill into the binary. A user receives a skill with `hod update`, and `hod` writes it into `.claude/skills/` and `.agents/skills/` of the project. Refer to `cli/AGENTS.md`, section 2.

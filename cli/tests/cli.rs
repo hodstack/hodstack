@@ -19,6 +19,19 @@ fn the_root_screen_lists_each_command() {
 }
 
 #[test]
+fn the_root_screen_names_the_path_of_this_binary() {
+    let mut command = hod::command();
+    let binary = std::env::current_exe().unwrap();
+
+    let screen = command.render_help().to_string();
+
+    assert!(
+        screen.trim_end().ends_with(&binary.display().to_string()),
+        "the last line of the screen is not the path of this binary:\n{screen}"
+    );
+}
+
+#[test]
 fn the_root_screen_carries_a_style() {
     let mut command = hod::command();
 
@@ -40,14 +53,22 @@ fn an_unknown_command_is_a_fault_of_use() {
 #[test]
 fn each_command_without_a_body_fails() {
     Command::new(HOD)
-        .args(["run", "pr:review", "1042"])
+        .args(["learn", "write a rule"])
         .assert()
         .failure();
-    Command::new(HOD).arg("list").assert().failure();
     Command::new(HOD)
         .args(["completions", "zsh"])
         .assert()
         .failure();
+}
+
+#[test]
+fn a_skill_that_is_absent_is_a_fault() {
+    Command::new(HOD)
+        .args(["nope", "a prompt"])
+        .assert()
+        .failure()
+        .stderr_eq("error: no skill has the name `nope`; run `hod list` to name each skill\n");
 }
 
 #[expect(clippy::panic, reason = "a test stops when this platform has no build")]
@@ -179,7 +200,7 @@ fn update_reports_a_release_that_is_absent() {
 }
 
 #[test]
-fn init_writes_both_files() {
+fn init_writes_the_files_of_this_program_and_the_seed_of_the_user() {
     let dir = tempfile::tempdir().unwrap();
     let mut out = Vec::new();
 
@@ -188,12 +209,22 @@ fn init_writes_both_files() {
     assert_eq!(code, std::process::ExitCode::SUCCESS);
     assert_eq!(
         fs::read_to_string(dir.path().join("AGENTS.md")).unwrap(),
-        include_str!("../templates/AGENTS.md")
+        include_str!("../templates/rules.md")
     );
     assert_eq!(
         fs::read_to_string(dir.path().join("CLAUDE.md")).unwrap(),
         include_str!("../templates/CLAUDE.md")
     );
+    assert_eq!(
+        fs::read_to_string(dir.path().join(".hod/project.md")).unwrap(),
+        include_str!("../templates/project.md")
+    );
+    assert!(dir.path().join(".hod/lock").is_file());
+    assert!(
+        dir.path().join(".claude/skills/learn/SKILL.md").is_file(),
+        "the command materialized no skill"
+    );
+    assert!(dir.path().join(".agents/skills/learn/SKILL.md").is_file());
 }
 
 #[test]
@@ -202,8 +233,9 @@ fn init_keeps_a_file_that_exists_and_writes_nothing() {
     fs::write(dir.path().join("AGENTS.md"), "mine").unwrap();
     let mut out = Vec::new();
 
-    hod::init(dir.path(), &mut out).unwrap();
+    let code = hod::init(dir.path(), &mut out).unwrap();
 
+    assert_eq!(code, std::process::ExitCode::FAILURE);
     assert_eq!(
         fs::read_to_string(dir.path().join("AGENTS.md")).unwrap(),
         "mine"
@@ -212,4 +244,135 @@ fn init_keeps_a_file_that_exists_and_writes_nothing() {
         !dir.path().join("CLAUDE.md").exists(),
         "the command wrote CLAUDE.md after it kept AGENTS.md"
     );
+    assert!(
+        !dir.path().join(".hod").exists(),
+        "the command wrote .hod after it kept AGENTS.md"
+    );
+}
+
+#[test]
+fn the_agents_file_names_each_rule_of_the_project() {
+    let dir = tempfile::tempdir().unwrap();
+    let rules = dir.path().join(".hod/rules");
+    fs::create_dir_all(&rules).unwrap();
+    fs::write(
+        rules.join("queue-worker-restart.md"),
+        "---\nname: queue-worker-restart\ndescription: Restart the queue worker.\n---\n",
+    )
+    .unwrap();
+    let mut out = Vec::new();
+
+    hod::init(dir.path(), &mut out).unwrap();
+
+    let agents = fs::read_to_string(dir.path().join("AGENTS.md")).unwrap();
+
+    assert!(agents.contains("## 5. The rules of this project"));
+    assert!(agents.contains(
+        "- [queue-worker-restart](.hod/rules/queue-worker-restart.md): Restart the queue worker.\n"
+    ));
+}
+
+fn project(dir: &Path) -> Command {
+    Command::new(HOD)
+        .args(["update", "--project"])
+        .current_dir(dir)
+}
+
+#[test]
+fn update_project_writes_the_files_of_this_program_again() {
+    let dir = tempfile::tempdir().unwrap();
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+    let agents = dir.path().join("AGENTS.md");
+    fs::remove_file(&agents).unwrap();
+
+    project(dir.path())
+        .assert()
+        .success()
+        .stdout_eq(
+            "\n  Kept     .hod/project.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+        );
+
+    assert_eq!(
+        fs::read_to_string(&agents).unwrap(),
+        include_str!("../templates/rules.md")
+    );
+}
+
+#[test]
+fn update_project_keeps_a_file_that_the_user_wrote() {
+    let dir = tempfile::tempdir().unwrap();
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+    let agents = dir.path().join("AGENTS.md");
+    fs::write(&agents, "mine").unwrap();
+
+    project(dir.path())
+        .assert()
+        .failure()
+        .stdout_eq(
+            "\n  Kept     .hod/project.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+        );
+
+    assert_eq!(fs::read_to_string(&agents).unwrap(), "mine");
+
+    project(dir.path()).arg("--force").assert().success();
+
+    assert_ne!(fs::read_to_string(&agents).unwrap(), "mine");
+}
+
+#[test]
+fn update_project_removes_a_skill_that_this_program_does_not_carry() {
+    let dir = tempfile::tempdir().unwrap();
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+    let mine = dir.path().join(".hod/skills/deploy");
+    fs::create_dir_all(&mine).unwrap();
+    fs::write(mine.join("SKILL.md"), "---\nname: deploy\n---\n").unwrap();
+
+    project(dir.path()).assert().success();
+
+    assert!(dir.path().join(".claude/skills/deploy/SKILL.md").is_file());
+
+    fs::remove_dir_all(&mine).unwrap();
+
+    project(dir.path())
+        .assert()
+        .success()
+        .stdout_eq(
+            "\n  Kept     .hod/project.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
+        );
+
+    assert!(!dir.path().join(".claude/skills/deploy").exists());
+}
+
+#[test]
+fn update_project_outside_a_project_writes_nothing() {
+    let dir = tempfile::tempdir().unwrap();
+
+    project(dir.path())
+        .assert()
+        .failure()
+        .stdout_eq("\n  This directory has no `.hod`. Run `hod init` first.\n\n");
+
+    assert!(!dir.path().join("AGENTS.md").exists());
+}
+
+#[test]
+fn list_names_each_skill_of_the_program_and_of_the_project() {
+    let dir = tempfile::tempdir().unwrap();
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+    let mine = dir.path().join(".hod/skills/deploy");
+    fs::create_dir_all(&mine).unwrap();
+    fs::write(
+        mine.join("SKILL.md"),
+        "---\nname: deploy\ndescription: Deploy this project.\n---\n",
+    )
+    .unwrap();
+
+    Command::new(HOD)
+        .arg("list")
+        .current_dir(dir.path())
+        .assert()
+        .success()
+        .stdout_eq(
+            "\nUSER SKILLS\n  learn        Write one rule for this project in `.hod/rules/`.\n\nPROJECT SKILLS\n  deploy       Deploy this project.\n\n",
+        );
 }

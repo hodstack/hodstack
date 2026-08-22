@@ -8,7 +8,8 @@ use crate::help;
     version,
     about = "Hodstack makes coding agents more productive.",
     long_about = None,
-    override_usage = "hod <command> [options]",
+    override_usage = "hod <skill> <prompt>\n  hod <command> [options]",
+    args_conflicts_with_subcommands = true,
     disable_help_subcommand = true,
     styles = help::STYLES,
     term_width = 0,
@@ -16,29 +17,40 @@ use crate::help;
 pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Command>,
+
+    #[arg(
+        value_name = "skill",
+        requires = "prompt",
+        help = "The name of the skill"
+    )]
+    pub skill: Option<String>,
+
+    #[arg(value_name = "prompt", help = "The prompt that the skill receives")]
+    pub prompt: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    #[command(about = "Create AGENTS.md and CLAUDE.md in this directory")]
+    #[command(about = "Write the files that a coding agent reads in this directory")]
     Init,
-
-    #[command(about = "Run a skill with a prompt")]
-    Run {
-        #[arg(help = "The name of the skill")]
-        skill: String,
-
-        #[arg(help = "The prompt that the skill receives")]
-        prompt: String,
-    },
 
     #[command(about = "List the installed skills")]
     List,
 
-    #[command(about = "Install the newest build of hod")]
+    #[command(about = "Install the newest build of hod and write the project files")]
     Update {
-        #[arg(long, help = "Report the newest build without an installation of it")]
+        #[arg(long, help = "Report each change without a write of it")]
         check: bool,
+
+        #[arg(long, help = "Write the project files without an installation of hod")]
+        project: bool,
+
+        #[arg(
+            long,
+            conflicts_with = "check",
+            help = "Write over a project file that this program does not own"
+        )]
+        force: bool,
     },
 
     #[command(about = "Print a shell completion script")]
