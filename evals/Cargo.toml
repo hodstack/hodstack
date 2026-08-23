@@ -1,0 +1,32 @@
+[workspace]
+
+[package]
+name = "hod-eval"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.85"
+description = "Run the eval cases of the Hodstack skills."
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "hod-eval"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.6", features = ["derive"] }
+regex = "1.11"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.9"
+
+[lints.clippy]
+print_stdout = "allow"
+print_stderr = "allow"
+
+[profile.release]
+opt-level = 2
+
+[dev-dependencies]
+tempfile = "3"

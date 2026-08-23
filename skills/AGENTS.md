@@ -21,7 +21,7 @@ The hyphen carries the group. The command `hod pr-review` starts the skill in `s
 
 ## 2. The tree
 
-```
+```text
 <top level of the directory>
 ├── skills/                      # the skills — one level, no subgroups
 │   └── learn/
@@ -49,6 +49,14 @@ There are two types of skill.
 - A **model skill** holds one part of the discipline. The agent selects it during its work. Write many words in its description that show when to use it.
 
 A user skill can use a model skill. A user skill must not use a different user skill.
+
+Write the sentence `Call the Skill tool with "<name>".` in a skill that uses a different skill. Each client gives the model a tool for a skill, and this sentence names that tool, thus the model calls it. Do not write `/<name>`: the model reads that form as text, and a slash command belongs to one client. Do not write the path of a file of a different skill: `hod` writes each skill in one flat directory, and a path that leaves the directory of the skill breaks.
+
+Name one skill in one sentence. Two skills need two sentences, because the tool takes one skill in one call.
+
+Put material that two skills read in the skill that owns it. The second skill calls the first skill, and it does not read a file of that skill.
+
+Write no call to a user skill. No skill reaches a user skill, thus write an instruction for the user instead, such as "Tell the user to run `hod learn`.".
 
 The standard has no method to show this difference, and each client gives its own method. Give a user skill `disable-model-invocation: true` in the front matter of `SKILL.md`, for Claude Code. Give it `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, for Codex. Write the two properties together: a skill is a user skill in the two clients or in none.
 

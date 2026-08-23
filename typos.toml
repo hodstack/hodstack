@@ -4,6 +4,9 @@ extend-exclude = [
   "/cli/.claude/",
   "/cli/target/",
   "/cli/supply-chain/",
+  "/evals/.cache/",
+  "/evals/.runs/",
+  "/evals/target/",
 ]
 
 [default.extend-words]

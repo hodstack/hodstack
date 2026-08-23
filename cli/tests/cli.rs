@@ -220,8 +220,8 @@ fn init_writes_the_files_of_this_program_and_the_seed_of_the_user() {
         include_str!("../templates/CLAUDE.md")
     );
     assert_eq!(
-        fs::read_to_string(dir.path().join(".hod/project.md")).unwrap(),
-        include_str!("../templates/project.md")
+        fs::read_to_string(dir.path().join(".hod/PROJECT.md")).unwrap(),
+        include_str!("../templates/PROJECT.md")
     );
     assert!(dir.path().join(".hod/lock").is_file());
     assert!(
@@ -303,7 +303,7 @@ fn update_project_writes_the_files_of_this_program_again() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
         );
 
     assert_eq!(
@@ -323,7 +323,7 @@ fn update_project_keeps_a_file_that_the_user_wrote() {
         .assert()
         .failure()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n\n",
         );
 
     assert_eq!(fs::read_to_string(&agents).unwrap(), "mine");
@@ -351,7 +351,7 @@ fn update_project_removes_a_skill_that_this_program_does_not_carry() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/project.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/learn\n  Kept     .agents/skills/learn\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
         );
 
     assert!(!dir.path().join(".claude/skills/deploy").exists());

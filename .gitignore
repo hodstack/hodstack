@@ -1,10 +1,14 @@
 .DS_Store
 
 /cli/target/
+/evals/target/
 
 /cli/.agents/skills/
 /cli/.claude/skills/
 /cli/skills/
+
+/evals/.cache/
+/evals/.runs/
 
 /npm/bin/hod
 /npm/bin/hod.exe

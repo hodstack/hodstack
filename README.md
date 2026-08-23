@@ -35,7 +35,7 @@ hod init
 ```
 AGENTS.md            hod writes this
 .hod/lock            hod writes this
-.hod/project.md      what this project is
+.hod/PROJECT.md      what this project is
 .hod/rules/*.md      one rule per file, listed in AGENTS.md
 .hod/skills/*/       your own skills
 ```

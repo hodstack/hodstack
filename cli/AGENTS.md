@@ -22,7 +22,7 @@ The program gives four commands and one skill. `init` writes the files of a proj
 
 `build.rs` reads `../skills/skills/` and writes a table of `include_str!` into `OUT_DIR`, thus the binary carries each skill and the skill of a release agrees with the program of that release. That directory is absent in the crate that `cargo package` writes, thus `cargo make publish` copies the tree to `cli/skills/` and `build.rs` reads that copy. `Cargo.toml` names `/skills/**`, `/build.rs` and `/templates/*.md` in the key `include`. Write a new file that the binary reads into that key too.
 
-`.hod/lock` holds the sum of each file that the program wrote. The program writes over a file when the lock records it with the sum that the file still has, and it reports `Skipped` for each other file, thus a command never replaces the work of the user. `init` refuses each directory that holds `AGENTS.md` or `CLAUDE.md`, because the text of that file belongs to `.hod/project.md`.
+`.hod/lock` holds the sum of each file that the program wrote. The program writes over a file when the lock records it with the sum that the file still has, and it reports `Skipped` for each other file, thus a command never replaces the work of the user. `init` refuses each directory that holds `AGENTS.md` or `CLAUDE.md`, because the text of that file belongs to `.hod/PROJECT.md`.
 
 The function `report` in `src/lib.rs` gives the exit code 0 for a broken pipe. The command `hod | head` closes the output before the program writes each line, thus the program stops without a message and reports success.
 

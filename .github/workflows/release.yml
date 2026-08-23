@@ -22,9 +22,6 @@ jobs:
     name: Build ${{ matrix.target }}
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ${{ matrix.runner }}
-    defaults:
-      run:
-        working-directory: cli
     strategy:
       fail-fast: false
       matrix:
@@ -58,13 +55,18 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install --yes musl-tools
 
+      - name: Install make
+        if: runner.os == 'Windows'
+        run: choco install make --no-progress --yes
+
       - name: Build
-        run: cargo build --locked --release --target ${{ matrix.target }}
+        run: make cli:build TARGET=${{ matrix.target }}
         env:
           HOD_COMMIT: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
 
       - name: Pack
         shell: bash
+        working-directory: cli
         run: |
           set -eu
           name=hod

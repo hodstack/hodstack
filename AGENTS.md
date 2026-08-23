@@ -2,16 +2,17 @@
 
 Hodstack makes coding agents more productive. It has two parts: a set of skills and a cli.
 
-The work happens in one repository: `hodstack/hodstack`. It holds two directories:
+The work happens in one repository: `hodstack/hodstack`. It holds three directories:
 
 - **`skills`** — the skills, as text. The directory uses the Agent Plugins standard. One tree supplies Claude Code, Codex, Cursor, Copilot, VS Code and other clients. For the layout, the rules and the package formats, refer to `skills/AGENTS.md`.
 - **`cli`** — the `hod` program. The command `hod <skill>` starts the coding agent of the user with that skill in its first prompt. For the rules, refer to `cli/AGENTS.md`.
+- **`evals`** — the eval cases of the skills. A case runs a coding agent against a real project and scores what the agent did, thus a change to the text of a skill that breaks a behaviour fails a test. For the shape of a case and the rules, refer to `evals/AGENTS.md`.
 
 Change the skill and the command that runs it in one commit and release them under one tag.
 
 The files `install.sh` and `install.ps1` and the directory `npm/` at the top of the repository install the `hod` binary. `cli/AGENTS.md`, section 6, controls them.
 
-Three files at the top of the repository control each directory: `.gitignore`, `typos.toml` and `LICENSE.md`. Give a path in `.gitignore` and in `typos.toml` the prefix `/cli/` or `/skills/`, because the file sits one directory above them. Do not write a second file with one of these names in a directory.
+Three files at the top of the repository control each directory: `.gitignore`, `typos.toml` and `LICENSE.md`. Give a path in `.gitignore` and in `typos.toml` the prefix `/cli/`, `/skills/` or `/evals/`, because the file sits one directory above them. Do not write a second file with one of these names in a directory.
 
 ---
 

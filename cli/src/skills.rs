@@ -187,6 +187,53 @@ mod tests {
         }
     }
 
+    fn calls(text: &str) -> Vec<&str> {
+        text.split("Call the Skill tool with \"")
+            .skip(1)
+            .filter_map(|rest| rest.split_once('"'))
+            .map(|(name, _)| name)
+            .collect()
+    }
+
+    #[test]
+    fn no_skill_reads_a_file_of_a_different_skill() {
+        for skill in shipped() {
+            for (file, text) in &skill.files {
+                assert!(
+                    !text.contains("](../"),
+                    "`{}/{file}` reads a file outside its skill, thus a flat tree breaks it",
+                    skill.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_call_of_the_skill_tool_names_a_model_skill_of_this_program() {
+        let skills = shipped();
+
+        for skill in &skills {
+            for (file, text) in &skill.files {
+                for name in calls(text) {
+                    let called = skills.iter().find(|other| other.name == name);
+
+                    let Some(called) = called else {
+                        panic!(
+                            "`{}/{file}` calls the skill `{name}`, and this program carries no skill with that name",
+                            skill.name
+                        );
+                    };
+
+                    assert!(
+                        !called.front().user,
+                        "`{}/{file}` calls the user skill `{name}`, and no skill reaches a user skill",
+                        skill.name
+                    );
+                }
+            }
+        }
+    }
+
     #[test]
     fn no_skill_takes_the_name_of_a_command() {
         let command = crate::command();

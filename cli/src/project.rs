@@ -10,11 +10,11 @@ use crate::skills::{self, Skill};
 pub const AGENTS: &str = "AGENTS.md";
 pub const CLAUDE: &str = "CLAUDE.md";
 pub const HOD: &str = ".hod";
-pub const INTENTION: &str = ".hod/project.md";
+pub const INTENTION: &str = ".hod/PROJECT.md";
 pub const CLIENTS: [&str; 2] = [".claude/skills", ".agents/skills"];
 
 pub const RULES: &str = include_str!("../templates/rules.md");
-pub const SEED: &str = include_str!("../templates/project.md");
+pub const SEED: &str = include_str!("../templates/PROJECT.md");
 pub const IMPORT: &str = include_str!("../templates/CLAUDE.md");
 
 #[derive(Debug)]

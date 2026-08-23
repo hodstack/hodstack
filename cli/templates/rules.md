@@ -1,8 +1,8 @@
 # The project
 
-Read `.hod/project.md` first. It holds the intention of this project.
+Read `.hod/PROJECT.md` first. It holds the intention of this project.
 
-`hod` writes this file. Write no sentence in it, because `hod update` writes it again. Write the intention of the project in `.hod/project.md`. Write a rule in a file in `.hod/rules/`. Write a skill in a directory in `.hod/skills/`.
+`hod` writes this file. Write no sentence in it, because `hod update` writes it again. Write the intention of the project in `.hod/PROJECT.md`. Write a rule in a file in `.hod/rules/`. Write a skill in a directory in `.hod/skills/`.
 
 ---
 
@@ -22,13 +22,13 @@ Write in [ASD-STE100](https://www.asd-ste100.org) Simplified Technical English: 
 
 Write GitHub flavored Markdown. Put one `#` heading in a file. Write one paragraph on one line, thus a change stays small in `git diff`. Number the sections of a long file, thus a different file can point to "section 3". Put a path, a command and a name from the code in `code font`.
 
-Write the intention of the project in `.hod/project.md`. Write a decision about one directory in the `AGENTS.md` file of that directory. If `.hod/project.md` and the `AGENTS.md` file of a directory disagree, obey `.hod/project.md` and correct the other file.
+Write the intention of the project in `.hod/PROJECT.md`. Write a decision about one directory in the `AGENTS.md` file of that directory. If `.hod/PROJECT.md` and the `AGENTS.md` file of a directory disagree, obey `.hod/PROJECT.md` and correct the other file.
 
 Write no new rule. This is the correct result of each task, and a task that adds a command, a module or a workflow does not change it. A rule needs a fault that happened: name the decision that you made wrong, or name the decision that these files refused to give you. A wrong change that you imagine is not a fault, thus write no rule to protect the code that you write today.
 
 A fact that you learned during one task is not a rule. Use it in that task, then write no sentence for it.
 
-`.hod/project.md` holds two items: the intention of the project, and a reason that the code cannot hold. Write no sentence below that level.
+`.hod/PROJECT.md` holds two items: the intention of the project, and a reason that the code cannot hold. Write no sentence below that level.
 
 Write no sentence for a fact that an agent finds when it reads the code. The cost of that read does not change the answer: a fact that four files hold is in the code. Put the fact in the code first, because a test stops the agent that breaks it and a sentence here does not.
 

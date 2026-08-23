@@ -10,7 +10,7 @@ Raise each dependency of this project to a newer version, one step at a time, an
 
 ## 1. Read the project
 
-Read `.hod/project.md` for the command that installs the dependencies and the command that runs the tests.
+Read `.hod/PROJECT.md` for the command that installs the dependencies and the command that runs the tests.
 
 Find each manifest at the top of the project. Section 3 names the command of each manifest.
 
@@ -20,9 +20,11 @@ Run `git status --short`. Stop when a file carries a change, and ask the user to
 
 Write no test during this work. A test that you write now covers the code that you changed, thus it shows no regression.
 
-When the project has no test, tell the user that you found no test and that no test can show a regression, then ask the user to continue or to stop. Wait for the answer.
+Run the test command that `.hod/PROJECT.md` names before you change a file. Decide this step from the output of that command only. Read no test file to decide it, and judge no test by its value, because a test that the framework wrote is a test and a test that asserts a constant is a test.
 
-Run the tests before you change a file. Stop when a test fails, and report that the failure came before this work.
+When a test fails, stop and raise no package. Name each test that failed from the output of the command. Say that the failure came before this work, thus the tests can show no regression. Give the three lists of section 8, and say that you raised no package, because the first list is empty. Ask the user nothing and write no commit.
+
+When the test command does not exist, or when the command runs zero tests, tell the user that you found no test and that no test can show a regression, then ask the user to continue or to stop. Wait for the answer.
 
 ## 3. The command of each manifest
 
@@ -48,17 +50,19 @@ Split the list in two groups. The first group holds each new minor version and e
 
 Raise each package of the first group, then run the tests. Ask the user nothing, because a minor version and a patch version carry no breaking change.
 
+Report each package of the first group with the version before and the version after, and say that you ran the tests. Report this work also when a major version of section 6 stops the work later.
+
 ## 6. Raise one major version at a time
 
-Read the release notes of the package between the two versions. Search the project for each breaking change that the notes name.
+Read the release notes of the package between the two versions. The notes name a member in a qualified form, such as `Class::method()`, and the code of the project calls that member in a different form, such as `$object->method()`, thus search for the bare name of each class, each method, each function and each option that the notes name, and not for the qualified string of the notes. A search of each bare name over the code of the project decides this step, and `packages/` and `vendor/` hold no code of the project.
 
-When no breaking change touches the project, raise the package and run the tests.
+When no breaking change touches the project, raise the package and run the tests. When a test fails after a raise of a major version that you made without a question, the search missed a breaking change, thus return the manifest and the lock file with `git checkout --`, change no file of the code, and give the question of the next paragraph for that package.
 
-When a breaking change touches the project, give the user the name of the package, its two versions, each breaking change and each file that the change touches, then ask the user to continue or to skip the package. Wait for the answer.
+When a breaking change touches the project, give the user the name of the package, the version that the project holds and the newer version, each breaking change and each file that the change touches, give the three lists of section 8 for the work that you finished, then ask the user to continue or to skip the package. Wait for the answer. The work stops until the answer arrives, thus the three lists come before the question.
 
 After the user continues, raise the package, apply each change that the notes name, then run the tests.
 
-Return the manifest and the lock file with `git checkout --` after a step that fails and that you cannot correct, then continue with the next package.
+Return the manifest and the lock file with `git checkout --` after a step that the user approved, that fails, and that you cannot correct, then continue with the next package. This rule does not cover a raise of a major version that you made without a question.
 
 ## 7. Align the manifest with the lock file
 
@@ -70,4 +74,6 @@ Return the manifest and the lock file with `git checkout --` when a test fails.
 
 Write no commit. Leave each change in the working tree.
 
-Give three lists: each package that you raised with its two versions, each package that you kept with the reason, and each file of the code that you changed.
+Give three lists: each package that you raised with the version before and the version after, each package that you kept with the version that the project holds, the newer version, and the reason, and each file of the code that you changed. Say that you ran the tests after those changes.
+
+Give the three lists in the last message of each answer. An answer that asks the user a question carries the three lists, and an answer that stops the work early carries the three lists. Put the three lists first and the question last, in that one message.
