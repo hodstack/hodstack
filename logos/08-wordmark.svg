@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 192" width="512" height="192">
-  <rect width="512" height="192" rx="32" fill="#FAFAF9"/>
-  <text x="72" y="120" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="88" font-weight="700" fill="#1C1917">hod<tspan fill="#E2725B">stack</tspan></text>
-  <rect x="72" y="142" width="120" height="10" rx="5" fill="#FBBF24"/>
-  <rect x="200" y="142" width="80" height="10" rx="5" fill="#E2725B"/>
-  <rect x="288" y="142" width="48" height="10" rx="5" fill="#78716C"/>
-</svg>
