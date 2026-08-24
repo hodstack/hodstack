@@ -1,0 +1,5 @@
+interface:
+  display_name: "Init"
+  short_description: "Write the intention of this project"
+policy:
+  allow_implicit_invocation: false

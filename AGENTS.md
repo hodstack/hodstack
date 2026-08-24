@@ -22,7 +22,7 @@ Each `AGENTS.md` file in this repository is for a coding agent. No user reads it
 
 Start each rule with a verb in the imperative. Put the condition before the instruction. Give the exact path, the exact command and the exact name that the agent must use. If a rule needs a test, give the command that does the test.
 
-The public files are different. `README.md`, the website, the release notes and the `description` in each manifest are for a user. Section 3 controls them.
+The public files are different. `README.md`, the website, the release notes and the `description` in each manifest are for a user. Section 3 controls them. Section 5 controls each message that you give the user.
 
 ---
 
@@ -77,3 +77,11 @@ Write a reason that the code cannot hold in the `AGENTS.md` file of that directo
 When a library reads the text of a comment as data, such as the description of a command on a help screen, write that text in an attribute or a field of that library instead.
 
 A tool that writes a comment into a file that it owns keeps that comment. Do not delete it: the tool fails until it writes the comment again.
+
+---
+
+## 5. How to write a message to the user
+
+Write each message that you give the user in the English of section 2: one instruction in one sentence, the imperative, the active voice, one meaning for one word, and no contraction. A question, a report, a plan and an answer obey this rule.
+
+Give the result first. Give the exact path, the exact command and the exact name. Write no sentence that says the work again, and no adjective that gives the reader no new fact.

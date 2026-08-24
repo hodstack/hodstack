@@ -28,6 +28,8 @@ Then set up your project:
 hod init
 ```
 
+`hod init` writes the files, then opens your coding agent to fill in `.hod/PROJECT.md`.
+
 ## Your project
 
 `hod init` writes `AGENTS.md`, and `hod` keeps writing it. Your own words go in `.hod/`:
@@ -40,7 +42,7 @@ AGENTS.md            hod writes this
 .hod/skills/*/       your own skills
 ```
 
-Ask your agent to run `/learn` when it gets something wrong. It writes the rule, and the next session reads it.
+Tell your agent when it gets something wrong. It writes the rule in `.hod/rules/`, and the next session reads it.
 
 ## Your skills
 

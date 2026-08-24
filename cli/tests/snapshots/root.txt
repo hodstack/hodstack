@@ -6,7 +6,7 @@ USAGE
   hod <command> [options]
 
 COMMANDS
-  init         Write the files that a coding agent reads in this directory
+  init         Write the files of this project, then start the skill init
   list         List the installed skills
   update       Install the newest build of hod and write the project files
   completions  Print a shell completion script

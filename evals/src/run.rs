@@ -1,10 +1,13 @@
+use std::collections::BTreeSet;
 use std::fs::{self, File};
+#[cfg(unix)]
+use std::os::unix::process::CommandExt as _;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use anyhow::{Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 use serde_json::Value;
 
 use crate::base;
@@ -199,6 +202,17 @@ pub fn perform(
 
     let dir = project.dir().to_owned();
 
+    if drift(&dir)?.is_some() {
+        project.ready(case, arm, say)?;
+
+        if let Some(paths) = drift(&dir)? {
+            bail!(
+                "a different case changed `{}` before the agent started: {paths}",
+                dir.display()
+            )
+        }
+    }
+
     let started = Instant::now();
     let trace_file = dir.join(".eval/trace.jsonl");
     let error_file = dir.join(".eval/stderr.log");
@@ -322,7 +336,37 @@ fn remember(dir: &Path) -> Result<()> {
         .context("cannot run `git`")?;
 
     fs::write(dir.join(".eval/head"), output.stdout)
-        .with_context(|| format!("cannot write `{}`", dir.join(".eval/head").display()))
+        .with_context(|| format!("cannot write `{}`", dir.join(".eval/head").display()))?;
+
+    let planted = state(dir)?;
+
+    fs::write(dir.join(".eval/status"), planted)
+        .with_context(|| format!("cannot write `{}`", dir.join(".eval/status").display()))
+}
+
+fn state(dir: &Path) -> Result<String> {
+    let output = Command::new("git")
+        .args(["status", "--porcelain"])
+        .current_dir(dir)
+        .output()
+        .context("cannot run `git`")?;
+
+    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+}
+
+fn drift(dir: &Path) -> Result<Option<String>> {
+    let planted = fs::read_to_string(dir.join(".eval/status")).unwrap_or_default();
+    let now = state(dir)?;
+
+    if planted == now {
+        return Ok(None);
+    }
+
+    let before: BTreeSet<&str> = planted.lines().collect();
+    let after: BTreeSet<&str> = now.lines().collect();
+    let paths: Vec<&str> = after.symmetric_difference(&before).copied().collect();
+
+    Ok(Some(paths.join(", ")))
 }
 
 fn spawn(
@@ -376,6 +420,9 @@ fn spawn(
         command.env("CLAUDE_CONFIG_DIR", home.join(".claude"));
     }
 
+    #[cfg(unix)]
+    command.process_group(0);
+
     command.spawn().context("cannot start `claude`")
 }
 
@@ -387,20 +434,42 @@ fn watch(child: &mut Child, limit: Duration, trace: &Path, say: &dyn Fn(Step)) -
         seen = follow(trace, seen, say);
 
         if child.try_wait().context("cannot read the agent")?.is_some() {
+            end(child);
             follow(trace, seen, say);
 
             return Ok(false);
         }
 
         if Instant::now() >= deadline {
-            child.kill().ok();
-            child.wait().ok();
+            end(child);
 
             return Ok(true);
         }
 
         thread::sleep(Duration::from_millis(400));
     }
+}
+
+fn end(child: &mut Child) {
+    #[cfg(unix)]
+    {
+        let group = format!("-{}", child.id());
+
+        for signal in ["-TERM", "-KILL"] {
+            Command::new("kill")
+                .arg(signal)
+                .arg(&group)
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status()
+                .ok();
+
+            thread::sleep(Duration::from_millis(300));
+        }
+    }
+
+    child.kill().ok();
+    child.wait().ok();
 }
 
 fn follow(trace: &Path, seen: usize, say: &dyn Fn(Step)) -> usize {
@@ -924,6 +993,36 @@ mod tests {
         let head = fs::read_to_string(dir.path().join(".eval/head")).unwrap();
 
         assert_eq!(head.trim().len(), 40);
+    }
+
+    #[test]
+    fn a_change_that_the_case_did_not_plant_is_a_fault() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::create_dir_all(dir.path().join(".eval")).unwrap();
+        fs::write(dir.path().join("composer.json"), "{}").unwrap();
+
+        baseline(dir.path()).unwrap();
+        remember(dir.path()).unwrap();
+
+        fs::write(dir.path().join("composer.json"), "{ \"raised\": true }").unwrap();
+
+        assert_eq!(
+            drift(dir.path()).unwrap(),
+            Some(" M composer.json".to_owned())
+        );
+    }
+
+    #[test]
+    fn the_state_of_a_case_that_plants_a_change_is_the_state_that_the_run_starts_with() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::create_dir_all(dir.path().join(".eval")).unwrap();
+        fs::write(dir.path().join("composer.json"), "{}").unwrap();
+
+        baseline(dir.path()).unwrap();
+        fs::write(dir.path().join("composer.json"), "{ \"dirty\": true }").unwrap();
+        remember(dir.path()).unwrap();
+
+        assert_eq!(drift(dir.path()).unwrap(), None);
     }
 
     #[test]

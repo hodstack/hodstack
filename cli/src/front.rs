@@ -83,8 +83,8 @@ mod tests {
     #[test]
     fn a_skill_that_the_model_cannot_reach_is_for_the_user() {
         let front = Front::read(
-            "---\nname: learn\ndescription: Write a rule\ndisable-model-invocation: true\n---\n",
-            "learn",
+            "---\nname: init\ndescription: Write the intention\ndisable-model-invocation: true\n---\n",
+            "init",
         );
 
         assert!(front.user);
@@ -100,8 +100,8 @@ mod tests {
 
     #[test]
     fn a_nested_field_is_not_a_field_of_the_skill() {
-        let front = Front::read("---\nname: learn\nmetadata:\n  name: other\n---\n", "learn");
+        let front = Front::read("---\nname: init\nmetadata:\n  name: other\n---\n", "init");
 
-        assert_eq!(front.name, "learn");
+        assert_eq!(front.name, "init");
     }
 }

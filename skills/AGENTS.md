@@ -24,7 +24,7 @@ The hyphen carries the group. The command `hod pr-review` starts the skill in `s
 ```text
 <top level of the directory>
 ├── skills/                      # the skills — one level, no subgroups
-│   └── learn/
+│   └── init/
 │       ├── SKILL.md
 │       ├── agents/openai.yaml   # the Codex metadata of this skill
 │       ├── references/*.md
@@ -35,7 +35,7 @@ The hyphen carries the group. The command `hod pr-review` starts the skill in `s
 
 Give the name of a skill the group first, such as `pr-review`, when the set needs groups by subject.
 
-The interior directory also has the name `skills`, thus each path has this form: `skills/skills/learn/`. The standard gives that name, and `build.rs` in `cli/` reads that path. Do not change it.
+The interior directory also has the name `skills`, thus each path has this form: `skills/skills/init/`. The standard gives that name, and `build.rs` in `cli/` reads that path. Do not change it.
 
 The files that `hod init` writes sit in `cli/templates/`, not in this directory. The crate `hod` reads them with `include_str!`, and `cargo package` writes a crate that does not build when a path leaves `cli/`. Refer to `cli/AGENTS.md`, section 2.
 
@@ -56,7 +56,7 @@ Name one skill in one sentence. Two skills need two sentences, because the tool 
 
 Put material that two skills read in the skill that owns it. The second skill calls the first skill, and it does not read a file of that skill.
 
-Write no call to a user skill. No skill reaches a user skill, thus write an instruction for the user instead, such as "Tell the user to run `hod learn`.".
+Write no call to a user skill. No skill reaches a user skill, thus write an instruction for the user instead, such as "Tell the user to run `hod deps-upgrade`.".
 
 The standard has no method to show this difference, and each client gives its own method. Give a user skill `disable-model-invocation: true` in the front matter of `SKILL.md`, for Claude Code. Give it `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, for Codex. Write the two properties together: a skill is a user skill in the two clients or in none.
 

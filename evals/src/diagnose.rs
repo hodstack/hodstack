@@ -25,7 +25,17 @@ pub fn about(
     skills: &Path,
     into: &Path,
 ) -> Result<()> {
-    let text = ask(&brief(case, outcome, verdicts, skills), model, &outcome.dir)?;
+    let dir = outcome
+        .dir
+        .with_file_name(format!("{}-{}-diagnosis", case.skill, case.name));
+
+    crate::base::clone(&outcome.dir, &dir)?;
+
+    let answer = ask(&brief(case, outcome, verdicts, skills), model, &dir);
+
+    fs::remove_dir_all(&dir).ok();
+
+    let text = answer?;
 
     if text.trim().is_empty() {
         bail!("the diagnosis is empty")

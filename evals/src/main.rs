@@ -653,7 +653,7 @@ mod tests {
         let cases = vec![
             a_case(at, "deps-upgrade", "one", "laravel", "pin"),
             a_case(at, "deps-upgrade", "other", "laravel", "pin"),
-            a_case(at, "learn", "third", "laravel", "pin"),
+            a_case(at, "init", "third", "laravel", "pin"),
         ];
 
         let buckets = plan(&cases, &cli(&[])).unwrap();
@@ -661,7 +661,7 @@ mod tests {
         assert_eq!(buckets.len(), 2);
         assert_eq!(buckets[0].skill, "deps-upgrade");
         assert_eq!(buckets[0].units.len(), 2);
-        assert_eq!(buckets[1].skill, "learn");
+        assert_eq!(buckets[1].skill, "init");
         assert_eq!(buckets[1].units.len(), 1);
     }
 

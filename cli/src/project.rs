@@ -112,7 +112,7 @@ pub fn agents(rules: &[Rule]) -> String {
         return text;
     }
 
-    text.push_str("\n---\n\n## 5. The rules of this project\n\n");
+    text.push_str("\n---\n\n## 6. The rules of this project\n\n");
     text.push_str("Read the file of a rule when its subject reaches your task.\n\n");
 
     for rule in rules {
@@ -178,7 +178,7 @@ mod tests {
         ]);
 
         assert!(text.starts_with(RULES));
-        assert!(text.contains("## 5. The rules of this project"));
+        assert!(text.contains("## 6. The rules of this project"));
         assert!(text.contains(
             "- [pest-not-phpunit](.hod/rules/pest-not-phpunit.md): Write a test with Pest\n"
         ));
@@ -219,15 +219,15 @@ mod tests {
     #[test]
     fn a_skill_of_the_project_takes_the_name_of_a_skill_of_the_program() {
         let dir = tempfile::tempdir().unwrap();
-        let skill = dir.path().join(".hod/skills/learn");
+        let skill = dir.path().join(".hod/skills/init");
         fs::create_dir_all(&skill).unwrap();
         fs::write(
             skill.join("SKILL.md"),
-            "---\nname: learn\ndescription: Mine.\n---\n",
+            "---\nname: init\ndescription: Mine.\n---\n",
         )
         .unwrap();
 
-        let found = Project::new(dir.path()).skill("learn").unwrap().unwrap();
+        let found = Project::new(dir.path()).skill("init").unwrap().unwrap();
 
         assert_eq!(found.front().description, "Mine.");
     }

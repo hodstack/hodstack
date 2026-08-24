@@ -67,7 +67,7 @@ One instruction that a project holds for the next task, with the fault that the 
 _Avoid_: guideline, convention, memory, preference, lesson.
 
 **rule file**:
-The file `.hod/rules/<name>.md` of one project, which holds one rule and carries `name` and `description` in its front matter. The skill `learn` writes it, the type `Rule` in `cli/src/project.rs` reads it, and `agents()` in `cli/src/project.rs` writes one row for it in section 5 of the `AGENTS.md` file of that project.
+The file `.hod/rules/<name>.md` of one project, which holds one rule and carries `name` and `description` in its front matter. A model writes it, the type `Rule` in `cli/src/project.rs` reads it, and `agents()` in `cli/src/project.rs` writes one row for it in section 6 of the `AGENTS.md` file of that project.
 _Avoid_: rule, note file, memory file.
 
 **lock**:
@@ -115,7 +115,7 @@ _Avoid_: command, slash command, first message, opening.
 - "coding agent" did two of those jobs: the program, and the reader. Resolved: the reader is the **model**. Three sentences name the wrong sense: `AGENTS.md`, section 1, "Each `AGENTS.md` file in this repository is for a coding agent"; `skills/AGENTS.md`, section 4, "A coding agent reads each file of a skill"; `cli/templates/rules.md`, section 1, "This file is for a coding agent".
 - `AGENTS.md` names two files: the file that a person writes in this repository, and the file that `hod` writes in a project from `cli/templates/rules.md`. Resolved: "the `AGENTS.md` file of this repository" for the first, "the `AGENTS.md` file of the project" for the second, and the second is a **project file**.
 - "intention" names what a project does, and the constant `INTENTION` in `cli/src/project.rs` names the path `.hod/PROJECT.md`. Resolved: **intention** for the text, `.hod/PROJECT.md` for the file.
-- "rule" did two jobs: the instruction, and the file that holds one instruction. Resolved: **rule** for the instruction, **rule file** for `.hod/rules/<name>.md`. `skills/skills/learn/SKILL.md`, section 3, already writes "rule file".
+- "rule" did two jobs: the instruction, and the file that holds one instruction. Resolved: **rule** for the instruction, **rule file** for `.hod/rules/<name>.md`. `cli/templates/rules.md`, section 2, already writes "rule file".
 - "client" did two jobs: the program that reads a skill, and the path that `hod` writes a skill into. Resolved: **client** for the program, **skill directory** for the path. The constant `CLIENTS` in `cli/src/project.rs` names two paths, not two clients.
 - A skill in `.hod/skills/` carried three names: `local` in `cli/src/skills.rs`, `mine` in `cli/src/list.rs`, and `PROJECT SKILLS` on the screen of `hod list`. Resolved: **project skill**.
 - `.agents/skills/` holds two sets with no relation: each installed skill of a user project, and the skill of a different supplier under `cli/.agents/skills/`. Resolved: **skill directory** for the first, **vendored skill** for the second.

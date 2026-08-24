@@ -24,7 +24,7 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    #[command(about = "Write the files that a coding agent reads in this directory")]
+    #[command(about = "Write the files of this project, then start the skill init")]
     Init,
 
     #[command(about = "List the installed skills")]

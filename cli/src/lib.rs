@@ -80,7 +80,7 @@ pub fn run() -> Result<ExitCode> {
     );
 
     let code = match command {
-        Command::Init => init(&here()?, &mut out),
+        Command::Init => setup(&mut out),
         Command::List => list::list(&Project::new(&here()?), &mut out),
         Command::Update {
             check,
@@ -96,6 +96,18 @@ pub fn run() -> Result<ExitCode> {
     }
 
     Ok(code)
+}
+
+fn setup(out: &mut impl Write) -> Result<ExitCode> {
+    let code = init(&here()?, out)?;
+
+    if code != ExitCode::SUCCESS {
+        return Ok(code);
+    }
+
+    out.flush()?;
+
+    start(skills::INIT)
 }
 
 fn here() -> Result<PathBuf> {

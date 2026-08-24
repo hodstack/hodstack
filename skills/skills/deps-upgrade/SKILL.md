@@ -22,7 +22,7 @@ Write no test during this work. A test that you write now covers the code that y
 
 Run the test command that `.hod/PROJECT.md` names before you change a file. Decide this step from the output of that command only. Read no test file to decide it, and judge no test by its value, because a test that the framework wrote is a test and a test that asserts a constant is a test.
 
-When a test fails, stop and raise no package. Name each test that failed from the output of the command. Say that the failure came before this work, thus the tests can show no regression. Give the three lists of section 8, and say that you raised no package, because the first list is empty. Ask the user nothing and write no commit.
+When a test fails, stop and raise no package. Name each test that failed from the output of the command. Say that the failure came before this work, thus the tests can show no regression. Give the report of section 8, and say that you raised no package, because the first list is empty. Ask the user nothing and write no commit.
 
 When the test command does not exist, or when the command runs zero tests, tell the user that you found no test and that no test can show a regression, then ask the user to continue or to stop. Wait for the answer.
 
@@ -58,7 +58,7 @@ Read the release notes of the package between the two versions. The notes name a
 
 When no breaking change touches the project, raise the package and run the tests. When a test fails after a raise of a major version that you made without a question, the search missed a breaking change, thus return the manifest and the lock file with `git checkout --`, change no file of the code, and give the question of the next paragraph for that package.
 
-When a breaking change touches the project, give the user the name of the package, the version that the project holds and the newer version, each breaking change and each file that the change touches, give the three lists of section 8 for the work that you finished, then ask the user to continue or to skip the package. Wait for the answer. The work stops until the answer arrives, thus the three lists come before the question.
+When a breaking change touches the project, give the user the name of the package, the version that the project holds and the newer version, each breaking change and each file that the change touches, give the report of section 8 for the work that you finished, then ask the user to continue or to skip the package. Wait for the answer. The work stops until the answer arrives, thus the report comes before the question.
 
 After the user continues, raise the package, apply each change that the notes name, then run the tests.
 
@@ -74,6 +74,6 @@ Return the manifest and the lock file with `git checkout --` when a test fails.
 
 Write no commit. Leave each change in the working tree.
 
-Give three lists: each package that you raised with the version before and the version after, each package that you kept with the version that the project holds, the newer version, and the reason, and each file of the code that you changed. Say that you ran the tests after those changes.
+Give three lists: each package that you raised with the version before and the version after, each package that you kept with the version that the project holds, the newer version, and the reason, and each file of the code that you changed. Name the last change of this work, say that you ran the tests after that change, and say that those tests passed, in one sentence of its own, whenever the first list names one package. The align command of section 7 is the last change when that command ran. The three lists and that sentence are the report of section 8.
 
-Give the three lists in the last message of each answer. An answer that asks the user a question carries the three lists, and an answer that stops the work early carries the three lists. Put the three lists first and the question last, in that one message.
+Give the report of section 8 in the last message of each answer. An answer that asks the user a question carries the report, and an answer that stops the work early carries the report. Put the report first and the question last, in that one message. Write no other sentence about a test run in that message, because two sentences about two test runs hide which run came last.

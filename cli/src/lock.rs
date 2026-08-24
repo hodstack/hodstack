@@ -104,14 +104,14 @@ mod tests {
         let path = dir.path().join(".hod/lock");
         let mut lock = Lock::default();
         lock.keep("AGENTS.md", project::sum(b"one"));
-        lock.keep(".claude/skills/learn/SKILL.md", project::sum(b"two"));
+        lock.keep(".claude/skills/init/SKILL.md", project::sum(b"two"));
 
         lock.write(&path).unwrap();
         let read = Lock::read(&path);
 
         assert_eq!(
             read.files().collect::<Vec<_>>(),
-            vec![".claude/skills/learn/SKILL.md", "AGENTS.md"]
+            vec![".claude/skills/init/SKILL.md", "AGENTS.md"]
         );
         assert_eq!(read.state("AGENTS.md", Some(b"one")), Owner::Ours);
     }

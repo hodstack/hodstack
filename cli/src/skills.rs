@@ -6,6 +6,8 @@ use anyhow::{Context as _, Result};
 use crate::front::Front;
 use crate::project;
 
+pub const INIT: &str = "init";
+
 #[derive(Debug)]
 struct Built {
     name: &'static str,
@@ -235,14 +237,14 @@ mod tests {
     }
 
     #[test]
-    fn no_skill_takes_the_name_of_a_command() {
+    fn the_one_skill_that_takes_the_name_of_a_command_is_the_skill_that_the_command_starts() {
         let command = crate::command();
         let names: Vec<&str> = command
             .get_subcommands()
             .map(clap::Command::get_name)
             .collect();
 
-        for skill in shipped() {
+        for skill in shipped().iter().filter(|skill| skill.name != INIT) {
             assert!(
                 !names.contains(&skill.name.as_str()),
                 "the skill `{}` takes the name of a command, thus `hod {}` cannot reach it",
@@ -250,6 +252,11 @@ mod tests {
                 skill.name
             );
         }
+
+        assert!(
+            shipped().iter().any(|skill| skill.name == INIT),
+            "the command `init` starts the skill `{INIT}`, and this program carries no skill with that name"
+        );
     }
 
     #[test]
