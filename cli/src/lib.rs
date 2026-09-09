@@ -1,14 +1,17 @@
 mod agent;
+mod check;
 mod cli;
 mod front;
 mod help;
 mod init;
 mod list;
 mod lock;
+mod merge;
 mod project;
 mod skills;
 mod sync;
 mod update;
+mod worktree;
 
 use std::env;
 use std::io::{self, Write};
@@ -82,11 +85,16 @@ pub fn run() -> Result<ExitCode> {
     let code = match command {
         Command::Init => setup(&mut out),
         Command::List => list::list(&Project::new(&here()?), &mut out),
+        Command::Check => check::check(&Project::new(&here()?), &mut out),
         Command::Update {
             check,
             project,
             force,
         } => refresh(check, project, force, &mut out),
+        Command::WorktreeCreate { branch } => worktree::create(&here()?, branch, &mut out),
+        Command::WorktreeMerge { message, keep } => {
+            merge::merge(&here()?, keep, message, &mut io::stdin().lock(), &mut out)
+        }
         Command::Completions { shell } => Ok(completions(shell)),
     }?;
 

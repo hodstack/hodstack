@@ -97,19 +97,12 @@ fn walk(skill: &Path, dir: &Path) -> Result<Vec<(String, String)>> {
         let text = fs::read_to_string(&path)
             .with_context(|| format!("cannot read `{}`", path.display()))?;
 
-        files.push((relative(skill, &path), text));
+        files.push((project::relative(skill, &path), text));
     }
 
     files.sort_by(|one, other| one.0.cmp(&other.0));
 
     Ok(files)
-}
-
-fn relative(skill: &Path, file: &Path) -> String {
-    file.strip_prefix(skill)
-        .unwrap_or(file)
-        .to_string_lossy()
-        .replace('\\', "/")
 }
 
 #[cfg(test)]

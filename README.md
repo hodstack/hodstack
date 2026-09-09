@@ -44,6 +44,14 @@ AGENTS.md            hod writes this
 
 Tell your agent when it gets something wrong. It writes the rule in `.hod/rules/`, and the next session reads it.
 
+Those files quote paths and names from your code. Rename one and the sentence stays behind:
+
+```sh
+hod check
+```
+
+`hod check` reads every path and every name you wrote in code font, and reports the ones your project no longer holds. It exits non-zero, so CI can run it.
+
 ## Your skills
 
 Run a skill by its name:
@@ -55,6 +63,26 @@ hod deps-upgrade
 `hod` opens the coding agent it finds on your PATH — `claude`, `codex`, `cursor-agent`, `opencode` or `gemini` — and hands it `/deps-upgrade`. Set `HOD_AGENT` to name a different one.
 
 `hod list` names every skill you have.
+
+## Your worktrees
+
+Give each piece of work its own branch and its own directory:
+
+```sh
+hod worktree:create fix-help
+```
+
+`hod worktree:create` adds a linked worktree in `~/.hod/worktrees/<project>/`, with the branch you name. Leave the name out and it names the branch for you, such as `quiet-harbor`. Its last line is a `cd` into that directory.
+
+When the work is done, fold it in from that worktree:
+
+```sh
+hod worktree:merge "fix: help"
+```
+
+`hod worktree:merge` merges the branch of the worktree you stand in into the branch of your main checkout, then removes the worktree and the branch. Leave the message out and it asks you for one. Press enter to keep the message of git. It stops before the merge when either checkout has uncommitted changes. When the two branches conflict, it undoes the merge, names each conflicted file, and keeps the worktree. Pass `--keep` to keep the worktree and the branch.
+
+Its last line is a `cd` into your main checkout, because the directory you stood in is gone.
 
 ## Updates
 

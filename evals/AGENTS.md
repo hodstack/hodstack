@@ -8,7 +8,7 @@ The `AGENTS.md` file at the top level gives the intention of the project and the
 
 ## 1. Where a case sits
 
-A case is one directory: `<skill>/<case>/`. The name of the outer directory is the name of the skill, thus the program gives the agent `/<skill>` as its first prompt and needs no field for that prompt. Name the case for the behaviour that it holds, such as `stops-on-a-dirty-tree`, thus the report of a failure reads as a sentence.
+A case is one directory: `<skill>/<case>/`. The name of the outer directory is the name of the skill, thus the program gives the agent `/<skill>` as its first prompt. Give the field `prompt` in `test.md` to a case of a model skill: the program gives that text as the first prompt, the model selects the skill by its `description`, and a grader `tool_used` with `tool = "Skill"` measures that selection. Name the case for the behaviour that it holds, such as `stops-on-a-dirty-tree`, thus the report of a failure reads as a sentence.
 
 A case holds two files and one optional directory:
 
@@ -27,7 +27,7 @@ Write no case inside `skills/skills/<name>/`. `build.rs` in `cli/` reads each fi
 
 `test.md` carries TOML front matter between two `+++` lines, and a body.
 
-The front matter holds the graders. A grader reads the trace of the run or the files of the project, and it needs no model: `tool_used`, `tool_order`, `regex`, `file_content`, `file_exists`, `git_clean`, `git_dirty` and `head_unmoved`. `src/case.rs` holds each field of each one.
+The front matter holds the graders. The default of `allowed_tools` holds no `Skill`, thus a case with a `prompt` names that tool in `allowed_tools`. A grader reads the trace of the run or the files of the project, and it needs no model: `tool_used`, `tool_order`, `regex`, `file_content`, `file_exists`, `git_clean`, `git_dirty` and `head_unmoved`. `src/case.rs` holds each field of each one.
 
 The body holds one expectation, and a model weighs it.
 

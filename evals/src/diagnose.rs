@@ -155,6 +155,7 @@ mod tests {
             threshold: 1.0,
             timeout_seconds: 900,
             allowed_tools: vec!["Bash".to_owned()],
+            prompt: None,
             intent: None,
             graders: Vec::new(),
             expectation: "The agent raised the minor.".to_owned(),

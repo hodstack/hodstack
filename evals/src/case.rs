@@ -151,6 +151,8 @@ struct Header {
     #[serde(default = "tools")]
     allowed_tools: Vec<String>,
     #[serde(default)]
+    prompt: Option<String>,
+    #[serde(default)]
     intent: Option<String>,
     #[serde(default)]
     graders: Vec<Grader>,
@@ -165,6 +167,7 @@ pub struct Case {
     pub threshold: f64,
     pub timeout_seconds: u64,
     pub allowed_tools: Vec<String>,
+    pub prompt: Option<String>,
     pub intent: Option<String>,
     pub graders: Vec<Grader>,
     pub expectation: String,
@@ -176,11 +179,13 @@ impl Case {
     }
 
     pub fn opening(&self) -> String {
-        format!("/{}", self.skill)
+        self.prompt
+            .clone()
+            .unwrap_or_else(|| format!("/{}", self.skill))
     }
 
     pub fn baseline(&self) -> Option<&str> {
-        self.intent.as_deref()
+        self.intent.as_deref().or(self.prompt.as_deref())
     }
 
     pub fn setup(&self) -> PathBuf {
@@ -232,6 +237,7 @@ pub fn read(dir: &Path, skill: &str, name: &str) -> Result<Case> {
         threshold: header.threshold,
         timeout_seconds: header.timeout_seconds,
         allowed_tools: header.allowed_tools,
+        prompt: header.prompt,
         intent: header.intent,
         graders: header.graders,
         expectation: expectation.trim().to_owned(),
@@ -365,6 +371,16 @@ The agent asked the user nothing.
         assert_eq!(case.base, "laravel");
         assert_eq!(case.graders.len(), 3);
         assert_eq!(case.expectation, "The agent asked the user nothing.");
+    }
+
+    #[test]
+    fn a_case_with_a_prompt_gives_that_prompt_and_no_name_of_a_skill() {
+        let case = parse(
+            "+++\nbase = \"laravel\"\nprompt = \"Write a function that reads a file.\"\n+++\n\nIt worked.\n",
+        );
+
+        assert_eq!(case.opening(), "Write a function that reads a file.");
+        assert_eq!(case.baseline(), Some("Write a function that reads a file."));
     }
 
     #[test]

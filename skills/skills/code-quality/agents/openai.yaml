@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Quality"
+  short_description: "The rules for a signature"
+policy:
+  allow_implicit_invocation: true

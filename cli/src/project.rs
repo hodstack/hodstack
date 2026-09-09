@@ -39,6 +39,10 @@ impl Project {
         self.root.join(HOD).is_dir()
     }
 
+    pub fn root(&self) -> &Path {
+        &self.root
+    }
+
     pub fn path(&self, relative: &str) -> PathBuf {
         self.root.join(relative)
     }
@@ -137,6 +141,13 @@ fn row(rule: &Rule) -> String {
 
 pub fn sum(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+
+pub fn relative(base: &Path, path: &Path) -> String {
+    path.strip_prefix(base)
+        .unwrap_or(path)
+        .to_string_lossy()
+        .replace('\\', "/")
 }
 
 pub fn name(path: &Path) -> String {
