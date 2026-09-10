@@ -49,27 +49,6 @@ pub enum Command {
         force: bool,
     },
 
-    #[command(
-        name = "worktree:create",
-        about = "Add a linked worktree with a branch in ~/.hod/worktrees"
-    )]
-    WorktreeCreate {
-        #[arg(help = "The name of the branch, instead of two words such as quiet-harbor")]
-        branch: Option<String>,
-    },
-
-    #[command(
-        name = "worktree:merge",
-        about = "Merge this worktree into the main checkout, then remove it"
-    )]
-    WorktreeMerge {
-        #[arg(help = "The message of the merge commit, instead of a question")]
-        message: Option<String>,
-
-        #[arg(long, help = "Keep the worktree and the branch after the merge")]
-        keep: bool,
-    },
-
     #[command(about = "Print a shell completion script")]
     Completions {
         #[arg(help = "The shell that receives the script")]

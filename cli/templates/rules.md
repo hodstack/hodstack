@@ -4,8 +4,6 @@ Read `.hod/PROJECT.md` first. It holds the intention of this project.
 
 `hod` writes this file. Write no sentence in it, because `hod update` writes it again. Write the intention of the project in `.hod/PROJECT.md`. Write a rule in a file in `.hod/rules/`. Write a skill in a directory in `.hod/skills/`.
 
-After `hod worktree:create`, change into the directory that its last line names, and do the rest of the work there.
-
 ---
 
 ## 1. The reader of this file

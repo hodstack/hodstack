@@ -6,13 +6,11 @@ USAGE
   hod <command> [options]
 
 COMMANDS
-  init             Write the files of this project, then start the skill init
-  list             List the installed skills
-  check            Report each path and each name in AGENTS.md that is absent
-  update           Install the newest build of hod and write the project files
-  worktree:create  Add a linked worktree with a branch in ~/.hod/worktrees
-  worktree:merge   Merge this worktree into the main checkout, then remove it
-  completions      Print a shell completion script
+  init         Write the files of this project, then start the skill init
+  list         List the installed skills
+  check        Report each path and each name in AGENTS.md that is absent
+  update       Install the newest build of hod and write the project files
+  completions  Print a shell completion script
 
 OPTIONS
   -h, --help     Print help
