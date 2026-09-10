@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: "The rules for the parameters, the properties and the return type of a signature. Use when you write a new method, a new function, a new class, a new constructor or a new property, when you add a parameter to a signature that exists, when you change what a method takes or what it returns, when you let a caller choose a value that a method holds today, when a method can find nothing and you choose what it gives back, when you decide that a value can be absent, when you decide how a class receives a dependency, and when a signature carries `= null`, `= []`, `= 0`, `= true`, `?`, `| null`, `| undefined`, `Option` or `Optional`."
+description: "The rules for the parameters, the properties and the return type of a signature. Use when you write a new method, a new function, a new class, a new constructor or a new property, when you add a parameter to a signature that exists, when you change what a method takes or what it returns, when you let a caller choose a value that a method holds today, when a method can find nothing and you choose what it gives back, when you decide that a value can be absent, when you decide how a class receives a dependency, when a parameter of type `bool` selects a behaviour, when a caller can turn a dependency such as a cache off, and when a signature carries `= null`, `= []`, `= 0`, `= true`, `?`, `| null`, `| undefined`, `Option` or `Optional`."
 ---
 
 # Code Quality
@@ -26,12 +26,21 @@ Delete each default value from the signature, and give the value at each call si
 | A method that returns null when it finds nothing | One method that throws, and one method that returns a collection |
 | A field that is null for one kind of record | A second type for that kind |
 | A parameter that carries a new instance of a dependency as its default | A constructor that takes the dependency, and a factory that gives it |
+| A parameter of type `bool` that turns a dependency off | A null object, section 3 |
 
 Resolve a dependency one time, in the factory of the class or in the place that builds the program, and let the constructor take that dependency. A test gives its own instance to that constructor, thus the signature needs no default value for it.
 
 Give each new type a name that says the state that it holds, such as `DraftInvoice` and `SentInvoice`. A name and a type stay correct, and a branch does not.
 
-## 3. Keep the public API of a package compatible
+## 3. Replace a flag argument with a null object
+
+A parameter of type `bool` that turns a dependency off is a conditional in the form of an argument. The method holds two paths, one for each value of the flag, and each path needs its own test.
+
+Delete the parameter. Write a second implementation of the dependency that answers each call with a miss: a read finds nothing, a write keeps nothing, and a count is zero. Let the constructor take the dependency, and let the caller that wants the dependency off give that implementation. The method then holds one path, and no test of the method reads the flag.
+
+Give the implementation a name that says what it does, such as `NoCache`. The pattern has the name Null Object, and the two refactorings have the names Replace Conditional with Polymorphism and Remove Flag Argument.
+
+## 4. Keep the public API of a package compatible
 
 Read `.hod/PROJECT.md`. That file says what this project is: a package that a different developer installs, or an application.
 
@@ -43,7 +52,7 @@ The rule for a nullable does not change in the public API of a package. Section 
 
 Each other file is internal: the code of an application, and the code below the public API of a package. Write no nullable and no default value in internal code.
 
-## 4. Stop when no replacement of section 2 fits
+## 5. Stop when no replacement of section 2 fits
 
 Stop when the code is internal and no line of section 2 replaces the nullable or the default value.
 
@@ -51,7 +60,7 @@ Give the user the path of the file, the signature, each state that the signature
 
 Weigh one exception on its own. An exception that the user accepted for one signature gives no exception for a different signature.
 
-## 5. Report
+## 6. Report
 
 Run the tests of this project after you change a signature.
 
@@ -60,6 +69,8 @@ Name each parameter that you made required, and say that it carries no default v
 Name the path of each file that holds a call site that you changed. Name each path, and not the number of them.
 
 Name each nullable type that you deleted, and name the replacement of section 2 that you wrote in its place.
+
+Name each parameter of type `bool` that you deleted, and name the null object that you wrote in its place.
 
 Say that you ran the tests of this project, and give the result of that run.
 
