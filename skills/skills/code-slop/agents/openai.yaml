@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Slop"
+  short_description: "The rules for the code that carries no evidence"
+policy:
+  allow_implicit_invocation: true

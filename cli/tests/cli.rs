@@ -303,7 +303,7 @@ fn update_project_writes_the_files_of_this_program_again() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/PROJECT.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Created  AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/code-slop\n  Kept     .agents/skills/code-slop\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n\n",
         );
 
     assert_eq!(
@@ -323,7 +323,7 @@ fn update_project_keeps_a_file_that_the_user_wrote() {
         .assert()
         .failure()
         .stdout_eq(
-            "\n  Kept     .hod/PROJECT.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Skipped  AGENTS.md\n           This file is yours. Run `hod update --force` to write over it.\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/code-slop\n  Kept     .agents/skills/code-slop\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n\n",
         );
 
     assert_eq!(fs::read_to_string(&agents).unwrap(), "mine");
@@ -351,7 +351,7 @@ fn update_project_removes_a_skill_that_this_program_does_not_carry() {
         .assert()
         .success()
         .stdout_eq(
-            "\n  Kept     .hod/PROJECT.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
+            "\n  Kept     .hod/PROJECT.md\n  Kept     AGENTS.md\n  Kept     CLAUDE.md\n  Kept     .claude/skills/code-immutability\n  Kept     .agents/skills/code-immutability\n  Kept     .claude/skills/code-messages\n  Kept     .agents/skills/code-messages\n  Kept     .claude/skills/code-quality\n  Kept     .agents/skills/code-quality\n  Kept     .claude/skills/code-slop\n  Kept     .agents/skills/code-slop\n  Kept     .claude/skills/deps-upgrade\n  Kept     .agents/skills/deps-upgrade\n  Kept     .claude/skills/init\n  Kept     .agents/skills/init\n  Removed  .agents/skills/deploy\n  Removed  .claude/skills/deploy\n\n",
         );
 
     assert!(!dir.path().join(".claude/skills/deploy").exists());
@@ -387,20 +387,7 @@ fn list_names_each_skill_of_the_program_and_of_the_project() {
         .assert()
         .success()
         .stdout_eq(
-            "
-USER SKILLS
-  deps-upgrade       Raise each dependency of this project to a newer version and keep the tests green.
-  init               Write the intention of this project in `.hod/PROJECT.md`.
-
-MODEL SKILLS
-  code-immutability  The rules for the state of an object.
-  code-messages      The rules for the text of a message that a person reads.
-  code-quality       The rules for the parameters, the properties and the return type of a signature.
-
-PROJECT SKILLS
-  deploy             Deploy this project.
-
-",
+            "\nUSER SKILLS\n  deps-upgrade       Raise each dependency of this project to a newer version and keep the tests green.\n  init               Write the intention of this project in `.hod/PROJECT.md`.\n\nMODEL SKILLS\n  code-immutability  The rules for the state of an object.\n  code-messages      The rules for the text of a message that a person reads.\n  code-quality       The rules for the parameters, the properties and the return type of a signature.\n  code-slop          The rules for the code that carries no evidence, which a reader names slop.\n\nPROJECT SKILLS\n  deploy             Deploy this project.\n\n",
         );
 }
 
