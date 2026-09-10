@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Messages"
+  short_description: "The rules for the text of a message"
+policy:
+  allow_implicit_invocation: true

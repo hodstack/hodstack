@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: "The rules for the parameters, the properties and the return type of a signature. Use when you choose what a new method returns and it can find nothing, when you choose the parameters of a new class, when you decide that a value can be absent, when you decide whether a new parameter carries a default value, when you add a parameter to a signature that exists, when you change a signature that a test calls, when a signature carries `= null`, `= []`, `= 0` or `= true`, and when a type carries `?`, `| null`, `| undefined`, `Option` or `Optional`."
+description: "The rules for the parameters, the properties and the return type of a signature. Use when you write a new method, a new function, a new class, a new constructor or a new property, when you add a parameter to a signature that exists, when you change what a method takes or what it returns, when you let a caller choose a value that a method holds today, when a method can find nothing and you choose what it gives back, when you decide that a value can be absent, when you decide how a class receives a dependency, and when a signature carries `= null`, `= []`, `= 0`, `= true`, `?`, `| null`, `| undefined`, `Option` or `Optional`."
 ---
 
 # Code Quality
@@ -15,7 +15,7 @@ A nullable type carries two states: the value, and the absence of the value. A d
 
 Delete each default value from the signature, and give the value at each call site. Delete each nullable type, and use the replacement of section 2.
 
-## 2. The replacement of a nullable and of a default value
+## 2. Replace a nullable and a default value
 
 | The code holds | Write instead |
 | --- | --- |
@@ -25,10 +25,13 @@ Delete each default value from the signature, and give the value at each call si
 | A property that is null until a later step | A second type that holds the value, and a constructor that takes it |
 | A method that returns null when it finds nothing | One method that throws, and one method that returns a collection |
 | A field that is null for one kind of record | A second type for that kind |
+| A parameter that carries a new instance of a dependency as its default | A constructor that takes the dependency, and a factory that gives it |
+
+Resolve a dependency one time, in the factory of the class or in the place that builds the program, and let the constructor take that dependency. A test gives its own instance to that constructor, thus the signature needs no default value for it.
 
 Give each new type a name that says the state that it holds, such as `DraftInvoice` and `SentInvoice`. A name and a type stay correct, and a branch does not.
 
-## 3. The public API of a package
+## 3. Keep the public API of a package compatible
 
 Read `.hod/PROJECT.md`. That file says what this project is: a package that a different developer installs, or an application.
 
@@ -40,7 +43,7 @@ The rule for a nullable does not change in the public API of a package. Section 
 
 Each other file is internal: the code of an application, and the code below the public API of a package. Write no nullable and no default value in internal code.
 
-## 4. An exception
+## 4. Stop when no replacement of section 2 fits
 
 Stop when the code is internal and no line of section 2 replaces the nullable or the default value.
 

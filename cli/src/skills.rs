@@ -111,14 +111,7 @@ mod tests {
     use crate::front::unquote;
 
     fn metadata(skill: &Skill) -> &str {
-        skill
-            .files
-            .iter()
-            .find(|(file, _)| file == "agents/openai.yaml")
-            .map_or_else(
-                || panic!("the skill `{}` holds no `agents/openai.yaml`", skill.name),
-                |(_, text)| text.as_str(),
-            )
+        text(skill, "agents/openai.yaml")
     }
 
     fn value<'a>(text: &'a str, key: &str) -> Option<&'a str> {
@@ -165,6 +158,66 @@ mod tests {
                     skill.name
                 );
             }
+        }
+    }
+
+    fn text<'a>(skill: &'a Skill, file: &str) -> &'a str {
+        skill
+            .files
+            .iter()
+            .find(|(name, _)| name == file)
+            .map_or_else(
+                || panic!("the skill `{}` holds no `{file}`", skill.name),
+                |(_, text)| text.as_str(),
+            )
+    }
+
+    fn headings(text: &str) -> Vec<&str> {
+        text.lines()
+            .filter_map(|line| line.strip_prefix("## "))
+            .collect()
+    }
+
+    #[test]
+    fn a_model_skill_holds_its_rules_in_one_form() {
+        for skill in shipped().into_iter().filter(|skill| !skill.front().user) {
+            let name = &skill.name;
+            let description = skill.front().description;
+            let short = value(metadata(&skill), "short_description").unwrap_or_default();
+            let body = text(&skill, "SKILL.md");
+            let headings = headings(body);
+
+            assert!(
+                description.starts_with("The rules for ") && description.contains(". Use when "),
+                "the description of `{name}` does not start with `The rules for <subject>. Use when `"
+            );
+            assert!(
+                short.starts_with("The rules for "),
+                "the `short_description` of `{name}` does not start with `The rules for `"
+            );
+            assert!(
+                body.contains("\n\nObey each rule of this file each time that you "),
+                "the body of `{name}` does not start with `Obey each rule of this file each time that you `"
+            );
+            assert!(
+                headings.len() >= 2
+                    && headings
+                        .iter()
+                        .enumerate()
+                        .all(|(at, heading)| heading.starts_with(&format!("{}. ", at + 1))),
+                "the headings of `{name}` are not `## 1. ` to `## {}. `",
+                headings.len()
+            );
+            assert!(
+                headings
+                    .last()
+                    .is_some_and(|last| last.ends_with(". Report")),
+                "the last section of `{name}` is not `Report`"
+            );
+            assert!(
+                body.ends_with("Write this report in the last message of your answer. Write no sentence for a rule of this file that your work did not touch.\n"),
+                "the body of `{name}` does not end with the two sentences of the report"
+            );
         }
     }
 

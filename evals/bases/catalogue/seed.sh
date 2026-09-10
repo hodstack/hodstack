@@ -330,7 +330,7 @@ PHP
 cat > .hod/PROJECT.md <<'MD'
 # The intention of this project
 
-This project is a catalogue. It reads rows over HTTP and gives them a title.
+This project is a catalogue. It reads rows over HTTP and gives them a title. It is an application, and no different developer installs it.
 
 Run `composer install` to install the dependencies. Run `composer test` to run the tests. Run `php -S 127.0.0.1:8000 -t public` to start the program.
 

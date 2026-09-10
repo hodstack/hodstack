@@ -46,7 +46,7 @@ The files that `hod init` writes sit in `cli/templates/`, not in this directory.
 There are two types of skill.
 
 - A **user skill** controls a sequence of operations. The user selects it by its name.
-- A **model skill** holds one part of the discipline. The agent selects it during its work. Write many words in its description that show when to use it.
+- A **model skill** holds the rules of one subject. The agent selects it during its work. Section 4 gives its form.
 
 A user skill can use a model skill. A user skill must not use a different user skill.
 
@@ -71,6 +71,8 @@ With `hod`, the user can start each skill directly. The program is the start met
 A coding agent reads each file of a skill. Write an instruction that the agent obeys during its work, then stop. Obey section 1 and section 2 of the `AGENTS.md` file at the top level: the imperative, the active voice, one instruction in one sentence, and the exact path, command and name.
 
 Delete a sentence that says the name of the skill again. Delete a sentence that gives background, such as the history of a tool or the reason that the project made a decision. Delete a sentence that a different file holds, and give the path of that file instead. Give a reason only when the reason changes the next decision of the agent.
+
+Give each model skill one form. The test `a_model_skill_holds_its_rules_in_one_form` in `cli/src/skills.rs` reads that form, and `cargo test` in `cli/` runs it. Start the `description` with `The rules for <subject>.`, then write `Use when` and each decision of the agent that the rules control, because the model selects the skill by that text alone. Start the body with `Obey each rule of this file each time that you <write the subject> and each time that you <change the subject>.`. Give one rule one numbered section, and write the heading as the rule, in the imperative. Name the last section `Report`, and write there each fact that the agent names in its last message, because the judge of an eval case reads that message and not the project. End the body with the two sentences that the test names. Write an eval case in `evals/<skill>/` for each rule that you add, thus a change to the text that breaks that rule fails a test. Refer to `evals/AGENTS.md`.
 
 ---
 
