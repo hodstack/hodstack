@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Tooling"
+  short_description: "The rules for each check of a project"
+policy:
+  allow_implicit_invocation: true

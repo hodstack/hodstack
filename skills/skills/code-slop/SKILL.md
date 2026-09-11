@@ -1,6 +1,6 @@
 ---
 name: code-slop
-description: "The rules for the code that carries no evidence, which a reader names slop. Use when you write a signature with the type `any`, `unknown`, `mixed`, `object`, `interface{}`, `Any` or `dynamic`, when you write a cast or an assertion of a type, when you check the type of a value in the middle of the program, when you read a request, a file, a document or a row of a database, when you write a `try` and a `catch`, when you give a value a fallback, when you add an option, a parameter, an interface or a layer for a caller that does not exist today, when you name an item `data`, `info`, `manager`, `helper`, `util`, `wrapper` or `shape`, when you write a comment, and when you read the diff of your own change."
+description: "The rules for the code that carries no evidence, which a reader names slop. Use when you write a new method or a new function, when you finish a change, when you read a request, a file, a document or a row of a database, when you check the type of a value in the middle of the program, when you write a `try` and a `catch`, when you give a value a fallback, when you add an option, a parameter, an interface or a layer for a caller that does not exist today, when you name an item `data`, `info`, `manager`, `helper`, `util`, `wrapper` or `shape`, when you write a comment, and when you read the diff of your own change."
 ---
 
 # Code Slop
@@ -9,36 +9,15 @@ Obey each rule of this file each time that you write code and each time that you
 
 Slop is code that carries no evidence. The program holds the answer at one place, a later line throws it away, and a third line finds it again. Each rule of this file keeps one piece of evidence.
 
-## 1. Keep the type that a value carries
+## 1. Prove the shape of an input one time, at its boundary
 
-Write the type of the value in each signature that the value passes through: a parameter, a return type, a property, and the value of a dictionary.
-
-Write no type of this table in a signature that you write, and write no dictionary of that type.
-
-| The language | The type that carries no evidence |
-| --- | --- |
-| PHP | `mixed`, `object`, an `array` with no shape |
-| TypeScript | `any`, `unknown`, `object`, `{}`, `Record<string, unknown>` |
-| Java | `Object`, a raw `Map` |
-| Kotlin | `Any` |
-| C# | `object`, `dynamic` |
-| Swift | `Any`, `AnyObject` |
-| Rust | `Box<dyn Any>`, `serde_json::Value` |
-| Python | `Any`, `dict[str, Any]` |
-| Go | `any`, `interface{}`, `map[string]any` |
-| Ruby | a `Hash` in the place of an object |
-
-Write no cast and no assertion of a type. A cast repairs the evidence that a line above it threw away, thus delete that line. Two casts in one expression repair one fault two times.
-
-## 2. Prove the shape of an input one time, at its boundary
-
-Read each input at the place that receives it: the request, the file, the document, the answer of an interface over HTTP, the row of a database and the argument of the command line. Write one function that reads that input, that gives back a type of this project, and that throws when the input does not agree.
+Read each input at the place that receives it: the request, the file, the document, the answer of an interface over HTTP, the row of a database and the argument of the command line. Write one function that reads that input, that gives back a type of this project, and that throws when the input does not agree. Call the Skill tool with "code-quality" for the type that this function gives back.
 
 Write no check of a type after that place. A check of `typeof`, of `instanceof`, of `is_array` or of the presence of a key, in the middle of the program, says that the type of the parameter is wrong. Correct that type.
 
 Write no second proof of a value that its type already gives. A parameter of a type that holds a date needs no check that the text is a date.
 
-## 3. Write no code for a caller that does not exist
+## 2. Write no code for a caller that does not exist
 
 Write the code that the task of today needs. An option, a parameter, a branch, an interface, an abstract class, a factory, an event and a layer each need one caller today.
 
@@ -46,7 +25,7 @@ Write no interface for one implementation. Write the class, and write the interf
 
 Write no type and no function that gives the same operations as the item that it holds.
 
-## 4. Let a fault stop the program
+## 3. Let a fault stop the program
 
 Write no `try` and no `catch` around code that gives a fault that this program cannot repair. A `catch` that writes a log line and continues gives the caller a wrong answer in the place of a fault.
 
@@ -54,7 +33,7 @@ Write a `catch` for two purposes: to repair the fault, and to give the fault a m
 
 Write no fallback value for a value that the program needs. A configuration that is absent, a file that is absent and an answer that is empty each stop the program with a message that names the item.
 
-## 5. Give each item a name that says what it is
+## 4. Give each item a name that says what it is
 
 Write no name that gives the kind of the item in the place of its subject: `data`, `info`, `item`, `object`, `value`, `values`, `result`, `shape`, `manager`, `helper`, `util`, `utils`, `wrapper`, `base`, `common`, `misc` and `temp`.
 
@@ -62,7 +41,7 @@ Write no suffix that gives the type again, such as `OrderData`, `PriceValue` and
 
 Give a function the operation that it does, and give a type the thing that it is. Read the names of the files near the file that you write, and obey the convention that they hold.
 
-## 6. Leave no line that the task does not need
+## 5. Leave no line that the task does not need
 
 Write no comment that gives the line below it again. Put the intention in the name and in the type.
 
@@ -74,11 +53,9 @@ Write no test of the language and no test of a library. Test the code of this pr
 
 Read the diff of your change before you write your report, and delete each line of it that no rule of your task needs.
 
-## 7. Report
+## 6. Report
 
 Run the tests of this project after your change.
-
-Name each type of the table of section 1 that you deleted from a signature, and name the type that you wrote in its place.
 
 Name the function that proves the shape of each input that your change reads, and give the path of it.
 

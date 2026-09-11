@@ -6,7 +6,7 @@ allowed_tools = ["Bash", "Read", "Write", "Edit", "Grep", "Glob", "Skill"]
 [[graders]]
 type = "tool_used"
 tool = "Skill"
-input_match = "code-slop"
+input_match = "code-quality"
 
 [[graders]]
 type = "file_content"
@@ -26,14 +26,9 @@ pattern = '\(string\)|\(array\)|\(object\)'
 match = "not_contains"
 
 [[graders]]
-type = "file_content"
-path = "src/Catalogue.php"
-pattern = 'throw new'
-
-[[graders]]
 type = "tool_used"
 tool = "Bash"
 input_match = "composer test"
 +++
 
-The agent reports that the new method takes a string and gives a string, and that no signature of it carries `mixed` or an untyped array. It reports that it proves the shape of the document one time, at the place that reads it, and that the method throws when the document holds no title. It reports that it ran the tests after that change.
+The agent reports that the new method takes a string and gives a string, and that no signature of it carries `mixed` or an untyped array. It reports that it wrote no cast and no assertion of a type. It reports that it ran the tests after that change.
