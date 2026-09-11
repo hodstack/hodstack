@@ -10,11 +10,11 @@ Write `.hod/PROJECT.md` from the code of this project. The `AGENTS.md` file of t
 
 ## 1. Read the file
 
-Read `.hod/PROJECT.md`. The file must name four items: the intention of the project, the command that installs the dependencies, the command that runs the tests, and each directory at the top of the project.
+Read `.hod/PROJECT.md`. The file must name five items: the intention of the project, whether this project is a package that a different developer installs or an application, the command that installs the dependencies, the command that runs the tests, and each directory at the top of the project. Name the file that holds the public API when this project is a package.
 
 Continue with section 2 when the file holds the text that `hod init` wrote. That text asks the reader to write the intention, and it names no command of this project.
 
-Stop when the file names each of the four items. Say that the file is ready, then give the report of section 5. Write no file.
+Stop when the file names each of the five items. Say that the file is ready, then give the report of section 5. Write no file.
 
 Continue with section 2 for the item that is absent when the file names one item and not each one. Keep the text that the user wrote.
 
@@ -23,6 +23,8 @@ Continue with section 2 for the item that is absent when the file names one item
 Take each fact from a file of this project. Ask the user for a fact that no file gives, and ask no question that a file answers.
 
 Read the manifest at the top of the project, such as `composer.json`, `package.json`, `Cargo.toml`, `pyproject.toml` or `go.mod`. It gives the name of the project, the dependencies and the scripts. The lock file names the package manager: `pnpm-lock.yaml` gives `pnpm`, and `poetry.lock` gives `poetry`.
+
+The manifest says whether this project is a package or an application: `type: library` in `composer.json`, `private: true` in `package.json` and a `[lib]` section in `Cargo.toml`. The entry point of a package names the file that holds the public API, such as `main` in `package.json` and `src/lib.rs` in a crate.
 
 Read `README.md`, `CONTRIBUTING.md` and the file of the continuous integration, such as `.github/workflows/ci.yml`. The workflow gives the command that the project runs on each push, thus it gives the test command that the project trusts.
 
@@ -37,7 +39,7 @@ Write `.hod/PROJECT.md` in this form. Write one paragraph on one line.
 ```markdown
 # The intention of this project
 
-Pest is a testing framework with a focus on simplicity. A PHP developer uses it to write a test for an application or for a package.
+Pest is a testing framework with a focus on simplicity. A PHP developer uses it to write a test for an application or for a package. It is a package, and `src/Functions.php` holds its public API.
 
 Install the dependencies with `composer install`. Run the tests with `composer test`. Start the program with `./bin/pest`.
 
@@ -46,7 +48,7 @@ Install the dependencies with `composer install`. Run the tests with `composer t
 - `tests/` — the tests of the framework, in Pest itself
 ```
 
-Give the intention one paragraph: what the project does, and who uses it. Write the exact command in `code font`. Give one line to one directory.
+Give the intention one paragraph: what the project does, who uses it, and whether it is a package or an application. Name the file that holds the public API of a package. Write the exact command in `code font`. Give one line to one directory.
 
 Write a fact that the code holds in the code. `.hod/PROJECT.md` holds two items: the intention of the project, and a reason that the code cannot hold.
 
@@ -54,7 +56,7 @@ Write no rule in this file. A rule needs a fault that happened, and each rule of
 
 ## 4. Ask the user
 
-Show the text of the file and ask the user to accept it. Name each fact that you took from a file, and name each fact that you guessed.
+Show the text of the file and ask the user to accept it. Wait for the answer. Name each fact that you took from a file, and name each fact that you guessed.
 
 ## 5. Report
 

@@ -1,6 +1,6 @@
 ---
 name: deps-upgrade
-description: "Raise each dependency of this project to a newer version and keep the tests green. Use when the user asks to upgrade the dependencies, to raise one package to a new version, to bump each version in a manifest, or to remove an old version from a lock file."
+description: "Raise each dependency of this project to a newer version and keep the tests passing. Use when the user asks to upgrade the dependencies, to raise one package to a new version, to bump each version in a manifest, or to remove an old version from a lock file."
 disable-model-invocation: true
 ---
 
@@ -33,8 +33,10 @@ When the test command does not exist, or when the command runs zero tests, tell 
 | `composer.json` | `composer outdated --direct` | `composer require <package>:^<version> --with-all-dependencies` | `composer bump` |
 | `package.json` | `npm outdated` | `npm install <package>@^<version>` | `npm update --save` |
 | `Cargo.toml` | `cargo upgrade --dry-run --incompatible` | `cargo add <package>@<version>` | `cargo upgrade` |
-| `pyproject.toml` | `uv tree --outdated` | `uv add <package>@<version>` | `uv-bump` |
+| `pyproject.toml` | `uv tree --outdated` | `uv add "<package>==<version>"` | `uv-bump` |
 | `go.mod` | `go list -m -u all` | `go get <package>@<version>` | `go mod tidy` |
+| `Gemfile` | `bundle outdated` | `~> <version>` on the line of the gem in `Gemfile`, then `bundle update <package> --conservative` | no command |
+| `*.csproj` | `dotnet list package --outdated` | `dotnet add package <package> --version <version>` | no command |
 
 Install the tool of a command that the computer does not carry: `cargo install cargo-edit` gives `cargo upgrade`, and `uv tool install uv-bump` gives `uv-bump`.
 
@@ -54,7 +56,7 @@ Report each package of the first group with the version before and the version a
 
 ## 6. Raise one major version at a time
 
-Read the release notes of the package between the two versions. The notes name a member in a qualified form, such as `Class::method()`, and the code of the project calls that member in a different form, such as `$object->method()`, thus search for the bare name of each class, each method, each function and each option that the notes name, and not for the qualified string of the notes. A search of each bare name over the code of the project decides this step, and `packages/` and `vendor/` hold no code of the project.
+Read the release notes of the package between the two versions, in the `CHANGELOG.md` of the installed package or in the repository of the package. The notes name a member in a qualified form, such as `Class::method()`, and the code of the project calls that member in a different form, such as `$object->method()`, thus search for the bare name of each class, each method, each function and each option that the notes name, and not for the qualified string of the notes. A search of each bare name over the code of the project decides this step, and the directory of the installed packages holds no code of the project: `vendor/`, `node_modules/`, `target/`, `.venv/` and a directory that `.hod/PROJECT.md` names for the dependencies.
 
 When no breaking change touches the project, raise the package and run the tests. When a test fails after a raise of a major version that you made without a question, the search missed a breaking change, thus return the manifest and the lock file with `git checkout --`, change no file of the code, and give the question of the next paragraph for that package.
 

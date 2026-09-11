@@ -387,7 +387,7 @@ fn list_names_each_skill_of_the_program_and_of_the_project() {
         .assert()
         .success()
         .stdout_eq(
-            "\nUSER SKILLS\n  deps-upgrade       Raise each dependency of this project to a newer version and keep the tests green.\n  init               Write the intention of this project in `.hod/PROJECT.md`.\n\nMODEL SKILLS\n  code-immutability  The rules for the state of an object.\n  code-messages      The rules for the text of a message that a person reads.\n  code-quality       The rules for the parameters, the properties and the return type of a signature.\n  code-slop          The rules for the code that carries no evidence, which a reader names slop.\n  code-tooling       The rules for each check of a project.\n\nPROJECT SKILLS\n  deploy             Deploy this project.\n\n",
+            "\nUSER SKILLS\n  deps-upgrade       Raise each dependency of this project to a newer version and keep the tests passing.\n  init               Write the intention of this project in `.hod/PROJECT.md`.\n\nMODEL SKILLS\n  code-immutability  The rules for the state of an object.\n  code-messages      The rules for the text of a message that a person reads.\n  code-quality       The rules for the parameters, the properties and the return type of a signature.\n  code-slop          The rules for the code that carries no evidence, which a reader names slop.\n  code-tooling       The rules for each check of a project.\n\nPROJECT SKILLS\n  deploy             Deploy this project.\n\n",
         );
 }
 

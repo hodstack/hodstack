@@ -5,17 +5,17 @@ description: "The rules for each check of a project. Use when you finish a chang
 
 # Code Tooling
 
-Obey each rule of this file each time that you finish a change and each time that a check of this project fails.
+Obey each rule of this file each time that you finish a change, each time that a check of this project fails and each time that you write a test.
 
 A check is a command that gives a fault of the code back: the static analyser, the tests, the test of the architecture, the coverage of the types, the formatter, the dry run of the refactoring tool and the checker of the typos.
 
 ## 1. Run each check of this project
 
-Read `.hod/PROJECT.md` for the command of each check. Run each of those commands after your last change and before your report. Read the file that each command runs for the level of that check and for the marker that it reads.
+Read `.hod/PROJECT.md` for the command of each check. Run each of those commands after your last change and before your report. Read the configuration file of each check, such as `phpstan.neon`, `tsconfig.json` or `.golangci.yml`, for the level of that check and for the marker that it reads.
 
 Run the command of the project, and not the binary of the tool. The command of the project carries the configuration, the paths and the arguments of this project, thus the result of it agrees with the result of the pipeline.
 
-Read the scripts of the manifest of the project for a check that `.hod/PROJECT.md` does not name: `composer.json`, `package.json`, `Makefile`, `Cargo.toml` and `pyproject.toml`. Tell the user to run `hod init` when `.hod/PROJECT.md` names no check.
+Read the scripts of the manifest of the project for a check that `.hod/PROJECT.md` does not name: `composer.json`, `package.json`, `Makefile`, `Cargo.toml`, `pyproject.toml`, `Rakefile` and `build.gradle.kts`. Tell the user to run `hod init` when `.hod/PROJECT.md` names no check.
 
 ## 2. Weaken no check to make it pass
 
@@ -63,6 +63,14 @@ Set the highest level of this table in a check that you add to this project.
 | Pest | `arch()->preset()->php()`, `arch()->preset()->strict()` and `arch()->preset()->security()` in one test file |
 | TypeScript | `"strict": true` in `tsconfig.json` |
 | mypy | `strict = true` |
+| Clippy | `-D warnings` and `-W clippy::pedantic` in the command |
+| ESLint | `strictTypeChecked` of `typescript-eslint` in the configuration |
+| Ruff | `select = ["ALL"]` |
+| Pyright | `"typeCheckingMode": "strict"` |
+| golangci-lint | `default: all` under `linters` in `.golangci.yml` |
+| RuboCop | `NewCops: enable` under `AllCops` |
+| detekt | `allRules = true` |
+| .NET | `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`, `<Nullable>enable</Nullable>` and `<AnalysisLevel>latest-all</AnalysisLevel>` |
 | The coverage of the types | the minimum at 100 |
 
 Add the command of the check to the script that runs each check of this project, such as `test` in `composer.json` and `test` in `package.json`. The pipeline and the user then run each check with one command.
@@ -71,11 +79,11 @@ Ask the user before you raise a level that this project holds today. Give the co
 
 ## 5. Put each test at the path of what it tests
 
-Write a unit test at the path of the file that it tests, under the directory of the unit tests: the test of `src/Actions/FollowUser.php` sits at `tests/Unit/Actions/FollowUserTest.php`. The tree of the unit tests thus mirrors the tree of the code, and a reader finds the test of a file without a search.
+Read the tree of the tests of this project before you write a test, and obey the names and the places that it holds, such as `tests/Unit/` or `tests/unit/`, and `RowsTest.php` or `rows.test.ts`.
+
+Write a unit test next to the file that it tests in a language whose convention is that place: a `#[cfg(test)]` module in Rust and a `_test.go` file in Go. Write a unit test at the path of the file that it tests, under the directory of the unit tests, in each other language: the test of `src/Actions/FollowUser.php` sits at `tests/Unit/Actions/FollowUserTest.php`. The tree of the unit tests thus mirrors the tree of the code, and a reader finds the test of a file without a search.
 
 Write a feature test in one directory for one boundary of the program through which the test drives it, such as `tests/Feature/Console/` for a command, `tests/Feature/Http/` for a request and `tests/Browser/` for a page, and give the file the name of the behaviour, such as `tests/Feature/Http/CreatePostTest.php`. A feature test crosses more than one file of the code, thus no path of the code can hold it.
-
-Read the tree of the tests of this project before you write a test, and obey the names that it holds, such as `tests/Unit/` or `tests/unit/`, and `RowsTest.php` or `rows.test.ts`.
 
 ## 6. Stop when a check fails for a reason outside your change
 

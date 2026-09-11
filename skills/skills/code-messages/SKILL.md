@@ -23,11 +23,11 @@ Write one pair of brackets around a command that interpolates a value, such as `
 
 ## 3. Write no bracket in four places
 
-Write no bracket around a placeholder that carries markup for a terminal, such as `<fg=%s>`. Write no bracket around a placeholder that holds a whole styled line, such as `<fg=gray>%s</>`. Write no bracket around a value that carries its own unit, such as a size and the name of its unit. Write no bracket around a value that already stands inside a delimiter of its own, such as the numbers of the header of a unified diff and a segment of a template of an address.
+Write no bracket around a placeholder that carries markup for a terminal, such as `<fg=%s>` in PHP and the escape sequence `\x1b[%dm` in a shell. Write no bracket around a placeholder that holds a whole styled line, such as `<fg=gray>%s</>`. Write no bracket around a value that carries its own unit, such as a size and the name of its unit. Write no bracket around a value that already stands inside a delimiter of its own, such as the numbers of the header of a unified diff, `@@ -1,4 +1,5 @@`, and a segment of a template of a route, `{id}` in `/users/{id}`.
 
 ## 4. Write one mark for one value
 
-Write no backtick, no quotation mark and no parenthesis around a value of a message. Two marks for one purpose give the reader two forms to learn, and square brackets are the one form of this rule.
+Write no backtick, no quotation mark and no parenthesis around a value of a message. Two marks for one purpose give the reader two forms to learn, and square brackets are the one form of this rule. Write `%s` and not `%q` in Go, because `%q` writes its own quotation marks.
 
 ## 5. Report
 
