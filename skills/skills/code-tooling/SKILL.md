@@ -1,6 +1,6 @@
 ---
 name: code-tooling
-description: "The rules for each check of a project. Use when you finish a change, when a check of this project fails, when you add an ignore, an entry of a baseline or a suppression, when you change the level of a static analyser, when you add a path to an exclusion, when a test that your change touches is skipped, when you add a check to this project, and when the code carries `@phpstan-ignore`, `@psalm-suppress`, `@codeCoverageIgnore`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, `type: ignore`, `noqa`, `nolint`, `rubocop:disable`, `#[allow(`, `@SuppressWarnings` or `@Suppress`, and when a file that you touch carries one of those markers or a marker of a check of this project."
+description: "The rules for each check of a project. Use when you finish a change, when a check of this project fails, when you add an ignore, an entry of a baseline or a suppression, when you change the level of a static analyser, when you add a path to an exclusion, when a test that your change touches is skipped, when you add a check to this project, when you write a test file and choose its path, and when the code carries `@phpstan-ignore`, `@psalm-suppress`, `@codeCoverageIgnore`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, `type: ignore`, `noqa`, `nolint`, `rubocop:disable`, `#[allow(`, `@SuppressWarnings` or `@Suppress`, and when a file that you touch carries one of those markers or a marker of a check of this project."
 ---
 
 # Code Tooling
@@ -29,7 +29,7 @@ A check that passes because you turned it off gives the user a wrong report. Cha
 
 Write no suppression of a fault of a static analyser and no suppression of a fault of a linter. Each item of this table turns one rule off for one line, and the fault stays in the code.
 
-Delete each suppression that a file of your change already holds, and correct the code that gave the fault under it. A suppression that you leave in a file that you touch is a suppression that you wrote. Read each file of your change for a marker of this table and for the marker of a check of this project, after your last change and before your report. A file that your change does not touch stays under section 5.
+Delete each suppression that a file of your change already holds, and correct the code that gave the fault under it. A suppression that you leave in a file that you touch is a suppression that you wrote. Read each file of your change for a marker of this table and for the marker of a check of this project, after your last change and before your report. A file that your change does not touch stays under section 6.
 
 | The language | The suppression |
 | --- | --- |
@@ -69,13 +69,21 @@ Add the command of the check to the script that runs each check of this project,
 
 Ask the user before you raise a level that this project holds today. Give the command, the level today, the level that you propose and the count of the faults that the raise gives. A raise gives a fault in a file that your task does not touch, thus the raise and your task are two changes.
 
-## 5. Stop when a check fails for a reason outside your change
+## 5. Put each test at the path of what it tests
+
+Write a unit test at the path of the file that it tests, under the directory of the unit tests: the test of `src/Actions/FollowUser.php` sits at `tests/Unit/Actions/FollowUserTest.php`. The tree of the unit tests thus mirrors the tree of the code, and a reader finds the test of a file without a search.
+
+Write a feature test in one directory for one boundary of the program through which the test drives it, such as `tests/Feature/Console/` for a command, `tests/Feature/Http/` for a request and `tests/Browser/` for a page, and give the file the name of the behaviour, such as `tests/Feature/Http/CreatePostTest.php`. A feature test crosses more than one file of the code, thus no path of the code can hold it.
+
+Read the tree of the tests of this project before you write a test, and obey the names that it holds, such as `tests/Unit/` or `tests/unit/`, and `RowsTest.php` or `rows.test.ts`.
+
+## 6. Stop when a check fails for a reason outside your change
 
 Read the fault and read your change. The fault came before your work when no line of your change touches the file and the rule that the fault names.
 
 Give the user the command, the output of that command and that reason. Ask the user to correct that fault first or to continue with it, and wait for the answer. Turn no check off to continue.
 
-## 6. Report
+## 7. Report
 
 Name each check that you ran, and give the command and the result of each one.
 
@@ -88,6 +96,8 @@ Name each suppression that you deleted, give the line of the code that you corre
 Name each level that you raised, and give the value before and the value after.
 
 Name each check that you added, give the level that you set, and name the script that runs it.
+
+Name each test file that you wrote, and give the file of the code that it tests or the boundary of the program that it drives.
 
 Name each check that failed for a reason outside your change, and give the command and the output of it.
 
