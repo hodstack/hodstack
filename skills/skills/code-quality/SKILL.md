@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: "The rules for the parameters, the properties and the return type of a signature. Use when you write a new method, a new function, a new class, a new constructor or a new property, when you add a parameter to a signature that exists, when you change what a method takes or what it returns, when you let a caller choose a value that a method holds today, when a method can find nothing and you choose what it gives back, when you decide that a value can be absent, when you decide how a class receives a dependency, when a parameter of type `bool` selects a behaviour, when a caller can turn a dependency such as a cache off, when you choose the type of a parameter or of a return type, when you write a cast, when a return type depends on an argument, when a caller outside this project can reach a type or a member, and when a signature carries `mixed`, `any`, `= null`, `= []`, `= 0`, `= true`, `?`, `| null`, `| undefined`, `Option` or `Optional`."
+description: "The rules for the parameters, the properties and the return type of a signature. Use when you write a new method, a new function, a new class, a new constructor or a new property, when you add a parameter to a signature that exists, when you change what a method takes or what it returns, when you let a caller choose a value that a method holds today, when a method can find nothing and you choose what it gives back, when you decide that a value can be absent, when you decide how a class receives a dependency, when a parameter of type `bool` selects a behaviour, when a caller can turn a dependency such as a cache off, when you choose the type of a parameter or of a return type, when you write a cast, when a return type depends on an argument, when a caller outside this project can reach a type or a member, and when a signature carries `mixed`, `any`, an `array` with no shape, `= null`, `= []`, `= 0`, `= true`, `?`, `| null`, `| undefined`, `Option` or `Optional`."
 ---
 
 # Code Quality
@@ -38,7 +38,9 @@ Turn the strict mode of the language on in each file that you write, with the li
 
 A language that is not in this table holds its strict mode in a configuration file. Call the Skill tool with "code-tooling" for that file.
 
-Write a type parameter for a return type that depends on an argument. Give that parameter in the signature in a language that holds generics, such as `<TResult>`. Give it in the annotation of the static analyser in a language that holds none, such as `@template TResult` above the signature and `@return TResult` above a return type of `mixed`. That annotation is the one exception to the first table of this section, because it carries the evidence that the signature cannot hold.
+Write a type parameter for a return type that depends on an argument. Give that parameter in the signature in a language that holds generics, such as `<TResult>`. Give it in the annotation of the static analyser in a language that holds none, such as `@template TResult` above the signature and `@return TResult` above a return type of `mixed`.
+
+Write the shape of an array and the type parameter of a generic type in that annotation, in a language whose signature cannot hold them, such as `@return array<string, int>` above a return type of `array`, `@param list<string> $names` above a parameter of type `array`, `@var list<string>` above a property of type `array`, and `@return Collection<int, Post>` above a return type of `Collection`. That annotation is the one exception to the first table of this section, because it carries the evidence that the signature cannot hold. Write no other text in that annotation.
 
 ## 2. Write no nullable and no default value
 
@@ -126,7 +128,7 @@ Name each cast that you deleted, and name the line that threw the evidence away.
 
 Name each file where you wrote the line of the strict mode of section 1.
 
-Name each type parameter that you wrote, and name the signature that carries it.
+Name each type parameter and each shape of an array that you wrote, and name the signature that carries it.
 
 Name each parameter that you made required, and say that it carries no default value.
 

@@ -1,13 +1,13 @@
 ---
 name: code-tooling
-description: "The rules for each check of a project. Use when you finish a change, when a check of this project fails, when you add an ignore, an entry of a baseline or a suppression, when you change the level of a static analyser, when you add a path to an exclusion, when a test that your change touches is skipped, when you add a check to this project, and when the code carries `@phpstan-ignore`, `@psalm-suppress`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, `type: ignore`, `noqa`, `nolint`, `rubocop:disable`, `#[allow(`, `@SuppressWarnings` or `@Suppress`, and when a file that you touch carries one of those markers or a marker of a check of this project."
+description: "The rules for each check of a project. Use when you finish a change, when a check of this project fails, when you add an ignore, an entry of a baseline or a suppression, when you change the level of a static analyser, when you add a path to an exclusion, when a test that your change touches is skipped, when you add a check to this project, and when the code carries `@phpstan-ignore`, `@psalm-suppress`, `@codeCoverageIgnore`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, `type: ignore`, `noqa`, `nolint`, `rubocop:disable`, `#[allow(`, `@SuppressWarnings` or `@Suppress`, and when a file that you touch carries one of those markers or a marker of a check of this project."
 ---
 
 # Code Tooling
 
 Obey each rule of this file each time that you finish a change and each time that a check of this project fails.
 
-A check is a command that gives a fault of the code back: the static analyser, the tests, the coverage of the types, the formatter and the checker of the typos.
+A check is a command that gives a fault of the code back: the static analyser, the tests, the test of the architecture, the coverage of the types, the formatter, the dry run of the refactoring tool and the checker of the typos.
 
 ## 1. Run each check of this project
 
@@ -33,7 +33,7 @@ Delete each suppression that a file of your change already holds, and correct th
 
 | The language | The suppression |
 | --- | --- |
-| PHP | `@phpstan-ignore`, `@phpstan-ignore-next-line`, `@psalm-suppress` |
+| PHP | `@phpstan-ignore`, `@phpstan-ignore-next-line`, `@psalm-suppress`, `@codeCoverageIgnore` |
 | TypeScript | `@ts-ignore`, `@ts-expect-error`, `eslint-disable` |
 | Java | `@SuppressWarnings` |
 | Kotlin | `@Suppress` |
@@ -56,11 +56,16 @@ Set the highest level of this table in a check that you add to this project.
 
 | The tool | The highest level |
 | --- | --- |
-| PHPStan | `level: max` |
+| PHPStan | `level: max`, and `phar://phpstan.phar/conf/bleedingEdge.neon` in `includes` |
 | Psalm | `errorLevel="1"` |
+| Pint | `declare_strict_types`, `final_class`, `final_internal_class`, `protected_to_private` and `date_time_immutable` on in `pint.json` |
+| Rector | `deadCode`, `codeQuality`, `typeDeclarations`, `privatization`, `earlyReturn` and `strictBooleans` on in `withPreparedSets()`, and `withPhpSets()` |
+| Pest | `arch()->preset()->php()`, `arch()->preset()->strict()` and `arch()->preset()->security()` in one test file |
 | TypeScript | `"strict": true` in `tsconfig.json` |
 | mypy | `strict = true` |
 | The coverage of the types | the minimum at 100 |
+
+Add the command of the check to the script that runs each check of this project, such as `test` in `composer.json` and `test` in `package.json`. The pipeline and the user then run each check with one command.
 
 Ask the user before you raise a level that this project holds today. Give the command, the level today, the level that you propose and the count of the faults that the raise gives. A raise gives a fault in a file that your task does not touch, thus the raise and your task are two changes.
 
@@ -81,6 +86,8 @@ Name each file of your change, and say for each one that it held a suppression o
 Name each suppression that you deleted, give the line of the code that you corrected for it, and give the type or the value that you wrote there. Name each suppression that you kept, give the one line of it and name the library that needs it.
 
 Name each level that you raised, and give the value before and the value after.
+
+Name each check that you added, give the level that you set, and name the script that runs it.
 
 Name each check that failed for a reason outside your change, and give the command and the output of it.
 

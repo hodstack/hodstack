@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+$config = json_decode((string) file_get_contents(__DIR__.'/../analyse.json'), true);
+$level = (int) $config['level'];
+$excluded = $config['exclude'];
+
+$faults = [];
+
+foreach (glob(__DIR__.'/../src/*.php') as $path) {
+    $name = 'src/'.basename($path);
+
+    if (in_array($name, $excluded, true)) {
+        continue;
+    }
+
+    $lines = file($path, FILE_IGNORE_NEW_LINES);
+
+    foreach ($lines as $at => $line) {
+        if ($at > 0 && str_contains($lines[$at - 1], '@analyse-ignore')) {
+            continue;
+        }
+
+        if ($level >= 5 && preg_match('/function [a-zA-Z]+\([^)]*\)(?!\s*:)/', $line) === 1) {
+            $faults[] = sprintf('%s:%d  the function gives no return type', $name, $at + 1);
+        }
+
+        if ($level >= 9 && preg_match('/function [a-zA-Z]+\(\s*\$/', $line) === 1) {
+            $faults[] = sprintf('%s:%d  the parameter carries no type', $name, $at + 1);
+        }
+    }
+
+    if ($level >= 9 && ! str_contains(implode("\n", $lines), 'declare(strict_types=1);')) {
+        $faults[] = sprintf('%s:1  the file turns the strict mode off', $name);
+    }
+}
+
+foreach ($faults as $fault) {
+    printf("  %s\n", $fault);
+}
+
+printf("\n%d faults at level %d\n", count($faults), $level);
+
+exit($faults === [] ? 0 : 1);

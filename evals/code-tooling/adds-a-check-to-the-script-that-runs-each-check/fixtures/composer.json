@@ -1,0 +1,34 @@
+{
+    "name": "acme/catalogue",
+    "version": "1.0.0",
+    "type": "project",
+    "description": "A catalogue served over HTTP.",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*",
+            "options": {
+                "symlink": false
+            }
+        },
+        {
+            "packagist.org": false
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "acme/csv": "1.0.0",
+        "acme/dates": "1.0.0",
+        "acme/http": "1.0.0",
+        "acme/text": "1.0.0",
+        "acme/theme": "1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Catalogue\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/run.php"
+    }
+}
