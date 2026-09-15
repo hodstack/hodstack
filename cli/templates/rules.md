@@ -34,6 +34,8 @@ Write no sentence for a fact that an agent finds when it reads the code. The cos
 
 Ask the user before you write a rule. Give the fault, and write the rule after the user agrees. Give the file the path `.hod/rules/<name>.md`. Give `<name>` two or three words with a hyphen between them, and name the subject of the rule. Give the file `name` and `description` in its front matter, and write one rule in one file. Run `hod update --project` after the write, thus this file names the rule in section 6. Keep the number of the rules: delete a rule file in the same change, or ask the user to accept one more rule. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
 
+When the user asks you to learn or to remember a fact, treat the request as a correction: write the fact in `.hod/rules/<name>.md` in the form of this section, then run `hod update --project`. Write no fact into the memory directory of Claude Code or of a different client, and read no fact from that directory, because a file outside the project reaches no other client and no other computer.
+
 Give no new part of the program its own rule, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not write a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
 
 ---
