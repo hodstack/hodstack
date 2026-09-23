@@ -116,7 +116,7 @@ pub fn agents(rules: &[Rule]) -> String {
         return text;
     }
 
-    text.push_str("\n---\n\n## 6. The rules of this project\n\n");
+    text.push_str("\n---\n\n## 7. The rules of this project\n\n");
     text.push_str("Read the file of a rule when its subject reaches your task.\n\n");
 
     for rule in rules {
@@ -189,7 +189,7 @@ mod tests {
         ]);
 
         assert!(text.starts_with(RULES));
-        assert!(text.contains("## 6. The rules of this project"));
+        assert!(text.contains("## 7. The rules of this project"));
         assert!(text.contains(
             "- [pest-not-phpunit](.hod/rules/pest-not-phpunit.md): Write a test with Pest\n"
         ));

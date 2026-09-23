@@ -280,7 +280,7 @@ fn the_agents_file_names_each_rule_of_the_project() {
 
     let agents = fs::read_to_string(dir.path().join("AGENTS.md")).unwrap();
 
-    assert!(agents.contains("## 6. The rules of this project"));
+    assert!(agents.contains("## 7. The rules of this project"));
     assert!(agents.contains(
         "- [queue-worker-restart](.hod/rules/queue-worker-restart.md): Restart the queue worker.\n"
     ));
