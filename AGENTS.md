@@ -10,6 +10,8 @@ The work happens in one repository: `hodstack/hodstack`. It holds three director
 
 Change the skill and the command that runs it in one commit and release them under one tag.
 
+Write each commit message in the format of [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>(<scope>)!: <description>`. Use the type `feat` for a new feature, `fix` for a bug fix, and `chore`, `docs`, `refactor`, `test`, `ci` or `build` for a different change. Give the scope `cli`, `skills`, `evals` or `deps` when the change stays in one part, and give no scope when the change touches more than one part. Write `!` before the `:` and a footer `BREAKING CHANGE: <description>` when the change breaks a user. Run `git pull --rebase` instead of `git pull`, because a merge commit does not obey the format.
+
 The files `install.sh` and `install.ps1` and the directory `npm/` at the top of the repository install the `hod` binary. `cli/AGENTS.md`, section 6, controls them.
 
 Three files at the top of the repository control each directory: `.gitignore`, `typos.toml` and `LICENSE.md`. Give a path in `.gitignore` and in `typos.toml` the prefix `/cli/`, `/skills/` or `/evals/`, because the file sits one directory above them. Do not write a second file with one of these names in a directory.
@@ -45,6 +47,8 @@ An `AGENTS.md` file holds two items: the intention of the project, and a reason 
 Write no sentence for a fact that an agent finds when it reads the code. The cost of that read does not change the answer: a fact that four files hold is in the code. Put the fact in the code first, because a test stops the agent that breaks it and a sentence here does not.
 
 Ask the user before you write a rule. Give the fault, then write the rule in one sentence after the user agrees. Keep the length of the file: delete a rule in the same change, or ask the user to accept a longer file. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
+
+When the user gives you an instruction, a correction or a rule, ask the user whether it applies to the project of each user of `hod` too, before you continue the work. When the user agrees, write it in a skill in `skills/skills/` and write an eval case for it in `evals/<skill>/`, as `skills/AGENTS.md`, section 4, says.
 
 Give no new part of the program its own section, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not add a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
 
