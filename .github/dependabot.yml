@@ -1,7 +1,9 @@
 version: 2
 updates:
   - package-ecosystem: cargo
-    directory: "/cli"
+    directories:
+      - "/cli"
+      - "/evals"
     target-branch: "0.x"
     schedule:
       interval: weekly

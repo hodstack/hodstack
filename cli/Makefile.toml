@@ -48,37 +48,37 @@ args = ["doc", "--no-deps", "--all-features", "--locked"]
 
 [tasks."test:audit"]
 description = "Check dependencies against the RustSec advisory database"
-install_crate = { crate_name = "cargo-audit", binary = "cargo-audit", test_arg = "--version" }
+install_crate = { crate_name = "cargo-audit", binary = "cargo-audit", test_arg = "--version", version = "0.22.2" }
 command = "cargo"
 args = ["audit"]
 
 [tasks."test:deny"]
 description = "Check dependency advisories, licenses, bans, and sources"
-install_crate = { crate_name = "cargo-deny", binary = "cargo-deny", test_arg = "--version", version = "0.19.6" }
+install_crate = { crate_name = "cargo-deny", binary = "cargo-deny", test_arg = "--version", version = "0.20.2" }
 command = "cargo"
 args = ["deny", "check"]
 
 [tasks."test:vet"]
 description = "Check dependencies against the cargo-vet supply-chain audits"
-install_crate = { crate_name = "cargo-vet", binary = "cargo-vet", test_arg = "--version", version = "0.10.0" }
+install_crate = { crate_name = "cargo-vet", binary = "cargo-vet", test_arg = "--version", version = "0.10.2" }
 command = "cargo"
 args = ["vet", "--locked"]
 
 [tasks."test:typos"]
 description = "Check for typos across the repository"
-install_crate = { crate_name = "typos-cli", binary = "typos", test_arg = "--version", version = "1.42.3" }
+install_crate = { crate_name = "typos-cli", binary = "typos", test_arg = "--version", version = "1.50.3" }
 cwd = ".."
 command = "typos"
 
 [tasks."test:machete"]
 description = "Check for unused Cargo dependencies"
-install_crate = { crate_name = "cargo-machete", binary = "cargo-machete", test_arg = "--version", version = "0.9.1" }
+install_crate = { crate_name = "cargo-machete", binary = "cargo-machete", test_arg = "--version", version = "0.9.2" }
 command = "cargo"
 args = ["machete"]
 
 [tasks."test:coverage"]
 description = "Run tests with coverage instrumentation"
-install_crate = { crate_name = "cargo-llvm-cov", binary = "cargo-llvm-cov", test_arg = "--version", version = "0.6.21" }
+install_crate = { crate_name = "cargo-llvm-cov", binary = "cargo-llvm-cov", test_arg = "--version", version = "0.9.1" }
 command = "cargo"
 args = ["llvm-cov", "--all-features", "--locked"]
 

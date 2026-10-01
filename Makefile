@@ -39,7 +39,7 @@ cli\:test:
 	cd cli && cargo make test
 
 skills\:lint:
-	npx --yes markdownlint-cli2@0.23.2 --config .markdownlint.json "skills/**/*.md"
+	npx --yes markdownlint-cli2@0.23.3 --config .markdownlint.json "skills/**/*.md"
 
 typos:
 	cd cli && cargo make test:typos

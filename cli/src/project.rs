@@ -1,3 +1,4 @@
+use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -140,7 +141,12 @@ fn row(rule: &Rule) -> String {
 }
 
 pub fn sum(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes)
+        .iter()
+        .fold(String::with_capacity(64), |mut hex, byte| {
+            let _ = write!(hex, "{byte:02x}");
+            hex
+        })
 }
 
 pub fn relative(base: &Path, path: &Path) -> String {

@@ -1,3 +1,4 @@
+use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -105,7 +106,12 @@ fn release(dir: &Path, body: &str, sound: bool) -> String {
         .status()
         .unwrap();
 
-    let sum = format!("{:x}", Sha256::digest(fs::read(dir.join(&file)).unwrap()));
+    let sum = Sha256::digest(fs::read(dir.join(&file)).unwrap())
+        .iter()
+        .fold(String::new(), |mut hex, byte| {
+            write!(hex, "{byte:02x}").unwrap();
+            hex
+        });
     let sum = if sound { sum } else { "0".repeat(64) };
 
     fs::write(dir.join("checksums.txt"), format!("{sum}  {file}\n")).unwrap();
