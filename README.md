@@ -57,12 +57,12 @@ hod check
 Run a skill by its name:
 
 ```sh
-hod deps-upgrade
+hod task-project-health
 ```
 
-`hod` opens the coding agent it finds on your PATH — `claude`, `codex`, `cursor-agent`, `opencode` or `gemini` — and hands it `/deps-upgrade`. Set `HOD_AGENT` to name a different one.
+`hod` opens the coding agent it finds on your PATH — `claude`, `codex`, `cursor-agent`, `opencode` or `gemini` — and hands it `/task-project-health`. Set `HOD_AGENT` to name a different one.
 
-`hod list` names every skill you have.
+A skill you run starts with `task-`. A skill that starts with `rules-` holds rules, and your agent reads it while it works. `hod list` names every skill you have.
 
 ## Updates
 

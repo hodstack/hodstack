@@ -6,7 +6,7 @@ USAGE
   hod <command> [options]
 
 COMMANDS
-  init         Write the files of this project, then start the skill init
+  init         Write the files of this project, then start the skill task-project-init
   list         List the installed skills
   check        Report each path and each name in AGENTS.md that is absent
   update       Install the newest build of hod and write the project files

@@ -15,7 +15,7 @@ Two rules control the tree:
 1. **Keep each skill one level below `skills/`.** `hod` writes one flat directory into the project of the user, and the search of a directory of skills is not recursive in each client. The form `skills/<group>/<name>/` thus gives no group to the user.
 2. **Put material for one client in the place that the client reads.** Codex reads `agents/openai.yaml` in the directory of the skill.
 
-The hyphen carries the group. The command `hod pr-review` starts the skill in `skills/skills/pr-review/`. Refer to `cli/AGENTS.md`, section 1.
+The hyphen carries the group. The command `hod task-project-health` starts the skill in `skills/skills/task-project-health/`. Refer to `cli/AGENTS.md`, section 1.
 
 ---
 
@@ -24,7 +24,7 @@ The hyphen carries the group. The command `hod pr-review` starts the skill in `s
 ```text
 <top level of the directory>
 ├── skills/                      # the skills — one level, no subgroups
-│   └── init/
+│   └── task-project-init/
 │       ├── SKILL.md
 │       ├── agents/openai.yaml   # the Codex metadata of this skill
 │       ├── references/*.md
@@ -33,9 +33,9 @@ The hyphen carries the group. The command `hod pr-review` starts the skill in `s
 └── CLAUDE.md                    # one line: @AGENTS.md
 ```
 
-Give the name of a skill the group first, such as `pr-review`, when the set needs groups by subject.
+Name each skill `<type>-<subject>-<concern or action>`. Write `task` as the type of a user skill and `rules` as the type of a model skill, then one word for the subject, such as `code`, `git` or `project`, then the concern of a model skill or the action of a user skill, such as `rules-code-type-safety` and `task-project-health`. The test `the_name_of_a_skill_starts_with_its_type_and_its_subject` in `cli/src/skills.rs` reads the type and the subject.
 
-The interior directory also has the name `skills`, thus each path has this form: `skills/skills/init/`. The standard gives that name, and `build.rs` in `cli/` reads that path. Do not change it.
+The interior directory also has the name `skills`, thus each path has this form: `skills/skills/task-project-init/`. The standard gives that name, and `build.rs` in `cli/` reads that path. Do not change it.
 
 The files that `hod init` writes sit in `cli/templates/`, not in this directory. The crate `hod` reads them with `include_str!`, and `cargo package` writes a crate that does not build when a path leaves `cli/`. Refer to `cli/AGENTS.md`, section 2.
 
@@ -56,7 +56,7 @@ Name one skill in one sentence. Two skills need two sentences, because the tool 
 
 Put material that two skills read in the skill that owns it. The second skill calls the first skill, and it does not read a file of that skill.
 
-Write no call to a user skill. No skill reaches a user skill, thus write an instruction for the user instead, such as "Tell the user to run `hod deps-upgrade`.".
+Write no call to a user skill. No skill reaches a user skill, thus write an instruction for the user instead, such as "Tell the user to run `hod task-project-health`.".
 
 The standard has no method to show this difference, and each client gives its own method. Give a user skill `disable-model-invocation: true` in the front matter of `SKILL.md`, for Claude Code. Give it `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, for Codex. Write the two properties together: a skill is a user skill in the two clients or in none.
 
@@ -72,7 +72,7 @@ A coding agent reads each file of a skill. Write an instruction that the agent o
 
 Delete a sentence that says the name of the skill again. Delete a sentence that gives background, such as the history of a tool or the reason that the project made a decision. Delete a sentence that a different file holds, and give the path of that file instead. Give a reason only when the reason changes the next decision of the agent.
 
-Give each model skill one form. The test `a_model_skill_holds_its_rules_in_one_form` in `cli/src/skills.rs` reads that form, and `cargo test` in `cli/` runs it. Start the `description` with `The rules for <subject>.`, then write `Use when` and each decision of the agent that the rules control, because the model selects the skill by that text alone. Start the body with `Obey each rule of this file each time that you <write the subject> and each time that you <change the subject>.`. Give one rule one numbered section, and write the heading as the rule, in the imperative. Name the last section `Report`, and write there each fact that the agent names in its last message, because the judge of an eval case reads that message and not the project. End the body with the two sentences that the test names. Write an eval case in `evals/<skill>/` for each rule that you add, thus a change to the text that breaks that rule fails a test. Refer to `evals/AGENTS.md`.
+Give each model skill one form. The test `a_model_skill_holds_its_rules_in_one_form` in `cli/src/skills.rs` reads that form, and `cargo test` in `cli/` runs it. Start the `description` with `The rules for <subject>.`, then write `Use when` and each decision of the agent that the rules control, because the model selects the skill by that text alone. Start the body with `Obey each rule of this file each time that you <write the subject> and each time that you <change the subject>.`. Give one rule one numbered section, and write the heading as the rule, in the imperative. Name the last section `Report`, and write there each fact that the agent names in its last message. End the body with the two sentences that the test names.
 
 ---
 

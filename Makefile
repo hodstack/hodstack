@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := cli:run
 
-.PHONY: cli\:run cli\:lint cli\:unit cli\:docs cli\:build cli\:msrv cli\:audit cli\:deny cli\:vet cli\:machete cli\:coverage cli\:test skills\:lint typos evals\:test
+.PHONY: cli\:run cli\:lint cli\:unit cli\:docs cli\:build cli\:msrv cli\:audit cli\:deny cli\:vet cli\:machete cli\:coverage cli\:test skills\:lint typos
 
 cli\:run:
 	cd cli && cargo run -q -- $(filter-out $@,$(MAKECMDGOALS))
@@ -43,9 +43,6 @@ skills\:lint:
 
 typos:
 	cd cli && cargo make test:typos
-
-evals\:test:
-	cd evals && cargo run -q --release -- $(filter-out $@,$(MAKECMDGOALS)) $(ARGS)
 
 %:
 	@:

@@ -1,5 +1,0 @@
-interface:
-  display_name: "Deps Upgrade"
-  short_description: "Raise each dependency of this project"
-policy:
-  allow_implicit_invocation: false

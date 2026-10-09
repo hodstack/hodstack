@@ -6,7 +6,7 @@ use anyhow::{Context as _, Result};
 use crate::front::Front;
 use crate::project;
 
-pub const INIT: &str = "init";
+pub const INIT: &str = "task-project-init";
 
 #[derive(Debug)]
 struct Built {
@@ -283,14 +283,14 @@ mod tests {
     }
 
     #[test]
-    fn the_one_skill_that_takes_the_name_of_a_command_is_the_skill_that_the_command_starts() {
+    fn no_skill_takes_the_name_of_a_command() {
         let command = crate::command();
         let names: Vec<&str> = command
             .get_subcommands()
             .map(clap::Command::get_name)
             .collect();
 
-        for skill in shipped().iter().filter(|skill| skill.name != INIT) {
+        for skill in shipped() {
             assert!(
                 !names.contains(&skill.name.as_str()),
                 "the skill `{}` takes the name of a command, thus `hod {}` cannot reach it",
@@ -303,6 +303,30 @@ mod tests {
             shipped().iter().any(|skill| skill.name == INIT),
             "the command `init` starts the skill `{INIT}`, and this program carries no skill with that name"
         );
+    }
+
+    #[test]
+    fn the_name_of_a_skill_starts_with_its_type_and_its_subject() {
+        for skill in shipped() {
+            let prefix = if skill.front().user {
+                "task-"
+            } else {
+                "rules-"
+            };
+            let rest = skill.name.strip_prefix(prefix).unwrap_or_else(|| {
+                panic!(
+                    "the skill `{}` does not start with `{prefix}`, the type of the skill",
+                    skill.name
+                )
+            });
+
+            assert!(
+                rest.split_once('-')
+                    .is_some_and(|(subject, word)| !subject.is_empty() && !word.is_empty()),
+                "the skill `{}` is not `{prefix}<subject>-<concern or action>`",
+                skill.name
+            );
+        }
     }
 
     #[test]

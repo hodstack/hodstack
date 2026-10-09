@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Public API"
+  short_description: "The rules for the public API of a package"
+policy:
+  allow_implicit_invocation: true
