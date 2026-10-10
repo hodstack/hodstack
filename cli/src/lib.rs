@@ -101,7 +101,13 @@ pub fn run() -> Result<ExitCode> {
 }
 
 fn setup(out: &mut impl Write) -> Result<ExitCode> {
-    let code = init(&here()?, out)?;
+    let here = Project::new(&here()?);
+
+    if here.exists() {
+        return sync::sync(&here, Mode::Write, out);
+    }
+
+    let code = init(here.root(), out)?;
 
     if code != ExitCode::SUCCESS {
         return Ok(code);
@@ -180,7 +186,22 @@ fn start(name: &str) -> Result<ExitCode> {
         bail!("no skill has the name `{name}`; run `hod list` to name each skill")
     };
 
-    agent::start(agent::find()?, &format!("/{}", skill.name))
+    let agent = agent::find()?;
+
+    if !project.holds(&skill.name) {
+        let command = if project.exists() {
+            "hod update --project"
+        } else {
+            "hod init"
+        };
+
+        bail!(
+            "the skill `{}` is not in this project; run `{command}` to write it",
+            skill.name
+        )
+    }
+
+    agent::start(agent, &format!("/{}", skill.name))
 }
 
 #[expect(

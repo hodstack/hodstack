@@ -85,11 +85,11 @@ Write a unit test next to the file that it tests in a language whose convention 
 
 Write a feature test in one directory for one boundary of the program through which the test drives it, such as `tests/Feature/Console/` for a command, `tests/Feature/Http/` for a request and `tests/Browser/` for a page, and give the file the name of the behaviour, such as `tests/Feature/Http/CreatePostTest.php`. A feature test crosses more than one file of the code, thus no path of the code can hold it.
 
-## 6. Stop when a check fails for a reason outside your change
+## 6. Repair a check that fails for a reason outside your change
 
 Read the fault and read your change. The fault came before your work when no line of your change touches the file and the rule that the fault names.
 
-Give the user the command, the output of that command and that reason. Ask the user to correct that fault first or to continue with it, and wait for the answer. Turn no check off to continue.
+Repair that fault with the rules of this file, then run each check again. Ask the user no question about it. Turn no check off to continue.
 
 ## 7. Report
 
@@ -107,7 +107,7 @@ Name each check that you added, give the level that you set, and name the script
 
 Name each test file that you wrote, and give the file of the code that it tests or the boundary of the program that it drives.
 
-Name each check that failed for a reason outside your change, and give the command and the output of it.
+Name each check that failed for a reason outside your change, give the command and the output of it, and name the repair.
 
 Say that you weakened no check.
 

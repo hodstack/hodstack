@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Project Health
 
-Bring this project to the newest healthy state, one step at a time, and stop at the first step that breaks the tests.
+Bring this project to the newest healthy state, one step at a time. Repair each fault that you find, and ask the user no question: the user reads the report of section 14 and decides there.
 
 Do each section of this file in its order. When the user asks for one part of this work, such as one package or the CI alone, do sections 1, 2 and 13, the sections of that part, and section 14.
 
@@ -18,7 +18,7 @@ Find each manifest at the top of the project. Section 3 names the commands of ea
 
 Find each file of the CI: `.github/workflows/*.yml`, `.gitlab-ci.yml`, `.circleci/config.yml` and `bitbucket-pipelines.yml`.
 
-Run `git status --short`. Stop when a file carries a change, and ask the user to commit that change first.
+Run `git status --short`, and keep each change that it names. Copy each manifest and each lock file into a new directory outside the project before your first change. Return a manifest or a lock file from that copy, and not with `git checkout --`, because `git checkout --` deletes a change of the user.
 
 Read the last run of the CI when `gh` is on the `PATH` and `git remote get-url origin` names `github.com`. Run `gh run list --branch "$(git branch --show-current)" --limit 1`, and run `gh run view <id> --log-failed` when that run failed. Keep each job that failed and its first error for section 12. Write no push, start no run and write no comment, because each of those reaches a different person.
 
@@ -30,9 +30,9 @@ Write no test during this work. A test that you write now covers the code that y
 
 Call the Skill tool with "rules-code-tooling", and run each check that it names, before you change a file. Decide this step from the output of those commands only. Read no test file to decide it, and judge no test by its value, because a test that the framework wrote is a test and a test that asserts a constant is a test.
 
-When a check fails, stop and change no file. Name each check and each test that failed from the output of the command. Say that the failure came before this work, thus the tests can show no regression. Give the report of section 14, and say that you raised no package. Ask the user whether you repair that failure first, and wait for the answer. Write no commit.
+When a check fails, repair the fault, then run each check again before you raise a package. Name each check and each test that failed from the output of the command, and the repair, in the report. When the fault is in the tool on this computer and not in the project, such as a binary that reads its arguments in a different way from the binary of the CI, install the version of the tool that the project names again, and name the fault in the report when it stays.
 
-When the test command does not exist, or when the command runs zero tests, tell the user that you found no test and that no test can show a regression, then ask the user to continue or to stop. Wait for the answer.
+When the test command does not exist, or when the command runs zero tests, continue the work, and say in the report that you found no test and that no test showed a regression.
 
 ## 3. The commands of each manifest
 
@@ -70,7 +70,7 @@ Search the code of the project for each direct dependency of each manifest: its 
 
 Keep a package that gives a command, a plugin of the package manager, or a class that the framework loads by discovery, such as a service provider of Laravel. A search does not find those uses.
 
-Remove each other package that the search does not find, one at a time, then run the tests. Return the manifest and the lock file with `git checkout --` when a test fails, and keep that package.
+Remove each other package that the search does not find, one at a time, then run the tests. Return the manifest and the lock file from the copy of section 1 when a test fails, and keep that package.
 
 ## 6. Sort the work
 
@@ -80,21 +80,15 @@ Split the list in two groups. The first group holds each new minor version and e
 
 ## 7. Raise the first group in one step
 
-Raise each package of the first group, then run the tests. Ask the user nothing, because a minor version and a patch version carry no breaking change.
-
-Report each package of the first group with the version before and the version after, and say that you ran the tests. Report this work also when a major version of section 8 stops the work later.
+Raise each package of the first group, then run the tests.
 
 ## 8. Raise one major version at a time
 
 Read the release notes of the package between the two versions, in the `CHANGELOG.md` of the installed package or in the repository of the package. The notes name a member in a qualified form, such as `Class::method()`, and the code of the project calls that member in a different form, such as `$object->method()`, thus search for the bare name of each class, each method, each function and each option that the notes name, and not for the qualified string of the notes. A search of each bare name over the code of the project decides this step, and the directory of the installed packages holds no code of the project.
 
-When no breaking change touches the project, raise the package and run the tests. When a test fails after a raise of a major version that you made without a question, the search missed a breaking change, thus return the manifest and the lock file with `git checkout --`, change no file of the code, and give the question of the next paragraph for that package.
+Raise the package, apply each change that the notes name to the code of the project, then run the tests. When a test fails, read the fault, correct the code, and run the tests again.
 
-When a breaking change touches the project, give the user the name of the package, the version that the project holds and the newer version, each breaking change and each file that the change touches, give the report of section 14 for the work that you finished, then ask the user to continue or to skip the package. Wait for the answer. The work stops until the answer arrives, thus the report comes before the question.
-
-After the user continues, raise the package, apply each change that the notes name, then run the tests.
-
-Return the manifest and the lock file with `git checkout --` after a step that the user approved, that fails, and that you cannot correct, then continue with the next package. This rule does not cover a raise of a major version that you made without a question.
+Return the manifest, the lock file and each file of the code that you changed for that package when you cannot correct the fault, then continue with the next package. Name that package, each breaking change and each file that it touches in the report.
 
 ## 9. Repair each vulnerability
 
@@ -106,7 +100,7 @@ Keep a package when no version repairs the advisory, and name the advisory in th
 
 Run the align command of section 3 for each manifest after the last package, then run the tests. The align command writes the installed version into the manifest, thus a manifest that holds `^1.0` against an installed `1.9.3` holds `^1.9.3` after this step.
 
-Return the manifest and the lock file with `git checkout --` when a test fails.
+Return the manifest and the lock file from the copy of section 1 when a test fails.
 
 ## 11. Check the runtime and the toolchain
 
@@ -114,7 +108,7 @@ Find each version of the runtime that the project names: the constraint of the m
 
 Read the end of support of each version from `https://endoflife.date/api/<product>.json`, such as `php`, `nodejs`, `python`, `ruby`, `go` and `dotnet`. Name each version that the project names after its end of support, with that date.
 
-Change no version of the runtime. The server of an application and each user of a package run that version, thus put the question in the report of section 14.
+Change no version of the runtime. The server of an application and each user of a package run that version, thus name it in the report of section 14.
 
 ## 12. Make the CI current and passing
 
@@ -130,7 +124,7 @@ Push nothing. A change to a workflow stays without a run until the user pushes i
 
 Run each check of section 2 after your last change. Each check must pass.
 
-Return the change that broke a check with `git checkout --` when you cannot correct it, and name it in the report.
+Return the change that broke a check when you cannot correct it, and name it in the report. Keep each change that `git status --short` named in section 1.
 
 ## 14. Report
 
@@ -142,7 +136,8 @@ Give these lists, and write "none" for a list that holds nothing:
 - each package that you kept, with the version that the project holds, the newer version and the reason,
 - each package that you removed, with the search that found no use of it,
 - each advisory, with the package and the version that repairs it, or with the words "no repair",
-- each version of the runtime after its end of support, with that date and the question to the user,
+- each version of the runtime after its end of support, with that date,
+- each check that failed in section 2, with the repair,
 - each action of the CI that you raised, with the version before and the version after, each job of the CI that you repaired, and each fault outside the project,
 - each file of the code that you changed.
 
@@ -150,4 +145,4 @@ Say whether the lock file was in sync, and name the command that wrote it when i
 
 Name the last change of this work, say that you ran each check after that change, and say that those checks passed, in one sentence of its own, whenever the first list names one package. The align command of section 10 is the last change of the packages when that command ran. The lists, the two facts and that sentence are the report of section 14.
 
-Give the report of section 14 in the last message of each answer. An answer that asks the user a question carries the report, and an answer that stops the work early carries the report. Put the report first and the question last, in that one message. Write no other sentence about a test run in that message, because two sentences about two test runs hide which run came last.
+Give the report of section 14 in the last message of the answer. Write no other sentence about a test run in that message, because two sentences about two test runs hide which run came last.

@@ -76,6 +76,8 @@ Write each message that you give the user in the English of section 2: one instr
 
 Give the result first. Give the exact path, the exact command and the exact name. Write no sentence that says the work again, and no adjective that gives the reader no new fact.
 
+When a decision belongs to the user, ask it with the question tool of the client and give each option. Do not put the decision in a sentence of a report.
+
 ---
 
 ## 6. How to use git

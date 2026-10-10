@@ -102,6 +102,16 @@ impl Project {
         Ok(skills)
     }
 
+    pub fn holds(&self, skill: &str) -> bool {
+        CLIENTS.iter().any(|client| {
+            self.root
+                .join(client)
+                .join(skill)
+                .join("SKILL.md")
+                .is_file()
+        })
+    }
+
     pub fn skill(&self, name: &str) -> Result<Option<Skill>> {
         Ok(self
             .installed()?

@@ -120,14 +120,33 @@ fn release(dir: &Path, body: &str, sound: bool) -> String {
     format!("file://{}", dir.display())
 }
 
-#[expect(clippy::unwrap_used, reason = "a test stops on a fault of its own")]
 fn installed(dir: &Path) -> PathBuf {
     let name = if cfg!(windows) { "hod.exe" } else { "hod" };
     let binary = dir.join(name);
 
-    fs::copy(HOD, &binary).unwrap();
+    copy_in_a_child_process(Path::new(HOD), &binary);
 
     binary
+}
+
+#[cfg(unix)]
+fn copy_in_a_child_process(from: &Path, to: &Path) {
+    let status = std::process::Command::new("cp").arg(from).arg(to).status();
+
+    assert!(
+        status.is_ok_and(|status| status.success()),
+        "cp cannot copy `{}`",
+        from.display()
+    );
+}
+
+#[cfg(windows)]
+fn copy_in_a_child_process(from: &Path, to: &Path) {
+    assert!(
+        fs::copy(from, to).is_ok(),
+        "cannot copy `{}`",
+        from.display()
+    );
 }
 
 fn update(binary: &Path, home: &Path, address: &str) -> Command {
@@ -411,13 +430,14 @@ fn agent(dir: &Path, binary: &str, record: &Path) -> PathBuf {
     let bin = dir.join("bin");
     fs::create_dir_all(&bin).unwrap();
 
-    let file = bin.join(binary);
+    let script = dir.join(format!("{binary}.sh"));
     fs::write(
-        &file,
+        &script,
         format!("#!/bin/sh\nprintf '%s' \"$*\" > {}\n", record.display()),
     )
     .unwrap();
-    fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).unwrap();
+    fs::set_permissions(&script, fs::Permissions::from_mode(0o755)).unwrap();
+    copy_in_a_child_process(&script, &bin.join(binary));
 
     bin
 }
@@ -428,6 +448,7 @@ fn a_skill_starts_the_agent_with_its_slash_command() {
     let dir = tempfile::tempdir().unwrap();
     let record = dir.path().join("record");
     let bin = agent(dir.path(), "claude", &record);
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
 
     Command::new(HOD)
         .arg("task-project-health")
@@ -480,11 +501,37 @@ fn init_starts_no_agent_after_it_keeps_a_file_that_exists() {
 
 #[cfg(unix)]
 #[test]
+fn init_in_a_project_writes_the_files_again_and_starts_no_agent() {
+    let dir = tempfile::tempdir().unwrap();
+    let record = dir.path().join("record");
+    let bin = agent(dir.path(), "claude", &record);
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+    let agents = dir.path().join("AGENTS.md");
+    fs::remove_file(&agents).unwrap();
+
+    Command::new(HOD)
+        .arg("init")
+        .current_dir(dir.path())
+        .env("PATH", &bin)
+        .env_remove("HOD_AGENT")
+        .assert()
+        .success();
+
+    assert_eq!(
+        fs::read_to_string(&agents).unwrap(),
+        include_str!("../templates/rules.md")
+    );
+    assert!(!record.exists(), "the command started the coding agent");
+}
+
+#[cfg(unix)]
+#[test]
 fn hod_agent_names_the_agent_that_starts() {
     let dir = tempfile::tempdir().unwrap();
     let record = dir.path().join("record");
     agent(dir.path(), "claude", &record);
     let bin = agent(dir.path(), "opencode", &record);
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
 
     Command::new(HOD)
         .arg("task-project-health")
@@ -498,6 +545,53 @@ fn hod_agent_names_the_agent_that_starts() {
         fs::read_to_string(&record).unwrap(),
         "--prompt /task-project-health"
     );
+}
+
+#[cfg(unix)]
+#[test]
+fn a_skill_that_a_directory_without_hod_does_not_hold_starts_no_agent() {
+    let dir = tempfile::tempdir().unwrap();
+    let record = dir.path().join("record");
+    let bin = agent(dir.path(), "claude", &record);
+
+    Command::new(HOD)
+        .arg("task-project-health")
+        .current_dir(dir.path())
+        .env("PATH", &bin)
+        .env_remove("HOD_AGENT")
+        .assert()
+        .failure()
+        .stderr_eq(
+            "error: the skill `task-project-health` is not in this project; run `hod init` to write it\n",
+        );
+
+    assert!(!record.exists(), "the command started the coding agent");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_skill_that_the_project_does_not_hold_starts_no_agent() {
+    let dir = tempfile::tempdir().unwrap();
+    let record = dir.path().join("record");
+    let bin = agent(dir.path(), "claude", &record);
+    hod::init(dir.path(), &mut Vec::new()).unwrap();
+
+    for client in [".claude/skills", ".agents/skills"] {
+        fs::remove_dir_all(dir.path().join(client).join("task-project-health")).unwrap();
+    }
+
+    Command::new(HOD)
+        .arg("task-project-health")
+        .current_dir(dir.path())
+        .env("PATH", &bin)
+        .env_remove("HOD_AGENT")
+        .assert()
+        .failure()
+        .stderr_eq(
+            "error: the skill `task-project-health` is not in this project; run `hod update --project` to write it\n",
+        );
+
+    assert!(!record.exists(), "the command started the coding agent");
 }
 
 #[test]

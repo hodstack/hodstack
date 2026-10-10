@@ -47,7 +47,7 @@ Write no sentence for a fact that an agent finds when it reads the code. The cos
 
 Ask the user before you write a rule. Give the fault, then write the rule in one sentence after the user agrees. Keep the length of the file: delete a rule in the same change, or ask the user to accept a longer file. A correction from the user is a rule and needs no question: write it in a file before you continue the work.
 
-When the user gives you an instruction, a correction or a rule, ask the user whether it applies to the project of each user of `hod` too, before you continue the work. When the user agrees, write it in a skill in `skills/skills/` as `skills/AGENTS.md`, section 4, says.
+When the user gives you an instruction, a correction or a rule, ask the user whether it applies to the project of each user of `hod` too, before you continue the work. When the user agrees, write it in a skill in `skills/skills/` as `skills/AGENTS.md`, section 4, says. When it controls a message to the user, write it in section 5 of `cli/templates/rules.md` instead.
 
 Give no new part of the program its own section, because the code of that part holds its design. Delete text that follows the order of a file of source code: that text describes the file, and the file describes itself. Replace an old rule. Do not add a second rule near it. Delete a rule that the project does not obey. Do not keep a record of what the project stopped doing, in a file or in a directory. Git holds the history.
 
@@ -88,3 +88,5 @@ A tool that writes a comment into a file that it owns keeps that comment. Do not
 Write each message that you give the user in the English of section 2: one instruction in one sentence, the imperative, the active voice, one meaning for one word, and no contraction. A question, a report, a plan and an answer obey this rule.
 
 Give the result first. Give the exact path, the exact command and the exact name. Write no sentence that says the work again, and no adjective that gives the reader no new fact.
+
+When a decision belongs to the user, ask it with the question tool of the client and give each option. Do not put the decision in a sentence of a report.
